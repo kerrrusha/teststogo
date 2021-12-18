@@ -1,0 +1,2 @@
+# teststogo
+My first php pet-project [html/bootstrap/css/js/jquery/ajax/php/mysql/redbean/sendmail] - site with different tests and quizzes, that allows you to flexibly customize each test separately (time limits / number of passes / exam mode, and so on), create your own tests, monitor your own testing statistics, and the site will also allow you to compete with other experts in the Rating Table!
