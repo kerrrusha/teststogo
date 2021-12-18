@@ -35,11 +35,11 @@
 <body>
 	<div id='header' class='text-center'>
 		<a href="index.php">
-			<img src="images/logo.png" class='img w-50' style="max-width: 500px;">
+			<img src="images/logo.png" class='img w-50' style="max-width: 500px; min-width: 300px;">
 		</a>
 	</div>
 
-	<div id="tabs">
+	<div id="tabs" class="m-0">
 		<!-- Кнопки -->
 		<div class="tabs-nav row">
 			<div class="col-md-3 p-0"><a href="#tab-1">Головна сторінка</a></div>

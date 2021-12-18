@@ -37,137 +37,14 @@ section
     justify-content: flex-start;
 }
 
-.header
+.navbar
 {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    display: none;
-    border-bottom: 1px solid gray;
-    z-index: 9999;
+  font-family: Oswald, sans-serif;
 }
 
-.header-2
+li.active a
 {
-  overflow: visible;
-  background-color: white;
-  height: 60px;
-  z-index: 9999;
-  
-  position: fixed; 
-  top: 0;
-  width: 100%; 
-  
-  display: none;
-}
-
-.header-2 a 
-{
-	float: left;
-	padding-left: 3.5%;
-	padding-right: 3.5%;
-	padding-top:10px;
-}
-
-.header-2 img
-{
-	height: 40px;
-}
-
-.headerNavigation2
-{
-  padding-top:10px;
-}
-
-.headerNavigation2 a 
-{
-  color: black;
-  text-decoration: none;
-  font-family: Oswald;
-  font-size: 18px;
-  line-height: 25px;
-  border-radius: 4px;
-}
-
-.headerNavigation2 a:hover {
-  color: orange;
-}
-
-.headerNavigation2 a.active 
-{
-  color: red;
-}
-
-/* якщо ширина екрану користувача менша, ніж 500 пікселів, змістити кнопки одне на одного */
-@media screen and (max-width: 500px) {
-  .header-2 a {
-    float: none;
-    display: block;
-    text-align: left;
-  }
-  .headerNavigation2 {
-    float: none;
-  }
-}
-
-
-
-
-.header-1
-{
-  overflow: hidden;
-  background-color: white;
-  display: block;
-  z-index: 9999;
-}
-
-.header-1 a 
-{
-  text-align: center;
-  display:block;
-}
-
-.headerNavigation 
-{
-  padding-top: 10px;
-  padding-bottom: 10px;
-  height: 40px;
-}
-
-.headerNavigation a 
-{
-  float: left;
-  color: black;
-  padding-left: 7%;
-  padding-right: 6%;
-  text-decoration: none;
-  font-family: Oswald;
-  font-size: 18px;
-  line-height: 25px;
-  border-radius: 4px;
-  width:25%;
-}
-
-.headerNavigation a:hover {
-  color: orange;
-}
-
-.headerNavigation a.active 
-{
-  color: red;
-}
-
-/* якщо ширина екрану користувача менша, ніж 500 пікселів, змістити кнопки одне на одного */
-@media screen and (max-width: 500px) {
-  .header-1 a {
-    float: none;
-    display: block;
-    text-align: left;
-  }
-  .headerNavigation {
-    float: none;
-  }
+  color: red !important;
 }
 
 
