@@ -1,0 +1,2 @@
+php_value error_log /home/f0610890/domains/teststogo.net/php_errors.log
+php_value display_errors 1

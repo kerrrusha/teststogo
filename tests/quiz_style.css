@@ -1,0 +1,130 @@
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,700);
+
+    .box {
+      width: 100%;
+      max-width: 400px;
+      margin: 2rem auto;
+      background: white;
+      border: 1px solid white;
+      border-radius: 3px;
+      text-align: left;
+    }
+
+    .tab p
+    {
+      font-size: 1.2rem;
+    }
+
+    /*****
+     *
+     * Radio checked style related
+     * the fun part starts here
+     *
+     */
+    input[type=radio] {
+      display: none;
+    }
+
+    /**
+     * How it should look when hovered
+     */
+    .active-label, label:focus, label:hover, label:active, input:checked + label 
+    {
+      background: #bdbdbd;
+    }
+    .active-label:before, label:focus:before, label:hover:before, label:active:before, input:checked + label:before 
+    {
+      background: #cfc8c8;
+      border-color: #969696;
+    }
+
+    /**
+     * Make those labels sexy
+     */
+    label 
+    {
+      color: #5e4e4e;
+      font-size: 1.2rem;
+      font-weight: bold;
+      line-height: 1;
+      cursor: pointer;
+      display: block;
+      padding: 0.8rem 0.8rem 0.8rem 3rem;
+      margin: 0.5rem 0rem;
+      position: relative;
+      border: 2px solid #9e9595;
+      border-radius: 5px;
+      background: #f5f5f5;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      -webkit-transition: all .15s ease;
+      transition: all .15s ease;
+      /**
+       * This is the radio fake dot basically
+       */
+    }
+    label:before {
+      content: "";
+      position: absolute;
+      left: 1rem;
+      top: 1rem;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: .2rem solid #ccc;
+    }
+
+    /**
+     * How it should look when checked
+     */
+    input:checked + label:before 
+    {
+      border: .2rem solid #616161;
+      background: #f5f5f5;
+    }
+
+    /**
+     * How it should look when disabled
+     */
+    input:disabled + label 
+    {
+      cursor: default;
+      opacity: .9;
+    }
+    input:disabled + label:hover 
+    {
+      cursor: default;
+      background: #f5f5f5;
+    }
+    input:checked:disabled:hover + label:hover 
+    {
+      cursor: default;
+      background: #bdbdbd;
+    }
+
+    th
+    {
+      text-align: right;
+      width: 30%;
+    }
+    td
+    {
+      text-align: left;
+    }
+
+    .successBar
+    {
+      font-weight: bold;
+      display: flex;
+      flex-flow: row;
+    }
+
+    .correct
+    {
+      background:#d1e7dd; color:#0f5132;
+    }
+
+    .incorrect
+    {
+      background:#f8d7da; color:#842029;
+    }

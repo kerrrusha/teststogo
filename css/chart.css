@@ -1,0 +1,33 @@
+.chartTab {
+    background-color: rgb(229, 233, 240);
+    text-align: center;
+}
+.chartTab h1 {
+    padding-top: 1em;
+}
+.chart-table {
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 2em;
+}
+.chart-back {
+    position: relative;
+    margin-left: 2em;
+    margin-right: 2em;
+    background-color: rgb(141, 186, 254);
+    height: 20em;
+    width: 4em;
+    border-radius: 0.5em;
+}
+.chart-front {
+    background-color: rgb(13, 109, 254);
+    height: 5%;
+    width: 100%;
+    border-radius: 0.5em;
+    color: rgb(184, 211, 240);
+    position: absolute;
+    bottom: 0px;
+}
+.chartTab td {
+    width: 3em;
+}
