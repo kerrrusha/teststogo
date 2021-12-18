@@ -40,6 +40,19 @@ section
 .navbar
 {
   font-family: Oswald, sans-serif;
+  flex-wrap: wrap !important;
+  justify-content: space-around !important;
+}
+
+.navbar-collapse
+{
+  flex-basis: auto!important;
+  flex-grow: 0!important;
+}
+
+li a
+{
+  padding: 0px 25px !important;
 }
 
 li.active a
