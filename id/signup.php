@@ -93,38 +93,9 @@
   <script src="/js/main.js"></script>
   <title>Sign Up</title>
   <link rel="icon" type="image/png" href="https://findicons.com/files/icons/2770/ios_7_icons/512/brain.png" sizes="512x512">
-
-  <style>
-    body {padding-top:140px;}
-  </style>
 </head>
 <body>
-
-  <div class="header header-2" data-visible-range="71-">
-      <a href="../index.php">
-        <img src="../images/logo.png">
-      </a>
-      <div class="headerNavigation2">
-        <a href="../index.php#tab-1">ГОЛОВНА СТОРІНКА</a>
-        <a href="../index.php#tab-2">СТАТИСТИКА</a>
-        <a class="active" href="../index.php#tab-3">МІЙ АККАУНТ</a>
-        <a href="../index.php#tab-4">ІНФОРМАЦІЯ</a>
-      </div>
-    </div>
-
-    <div class="header header-1" data-visible-range="0-70">
-      <a href="../index.php">
-        <img src="../images/logo.png">
-      </a>
-      <div class="headerNavigation">
-        <a href="../index.php#tab-1">Головна сторінка</a>
-        <a href="../index.php#tab-2">Статистика</a>
-        <a class="active" href="../index.php#tab-3">Мій аккаунт</a>
-        <a href="../index.php#tab-4">Інформація</a>
-      </div>
-    </div>
-
-
+  <?php require("../blocks/header.php"); ?>
 
     <div class="container col-lg-5 mx-auto">
     <div class="p-5 bg-light rounded">

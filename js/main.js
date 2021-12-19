@@ -41,7 +41,6 @@ $(window).scroll(function() {
         $('#tabs .tabs-nav a').removeClass('active');
         $(this).addClass('active');
         //console.log('Clicked!');
-        return false;
       }
       ).filter(':first').click();
       
@@ -55,5 +54,5 @@ $(window).scroll(function() {
         }
         
       //скрыть якорь и удалить параметры из строки url (использовать только в самом конце страницы!!!)
-      history.pushState('', document.title, window.location.pathname + window.location.search);
+      //history.pushState('', document.title, window.location.pathname + window.location.search);
     });

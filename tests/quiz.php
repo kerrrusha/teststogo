@@ -19,7 +19,7 @@
       if($authorised)
       {
         $uid = $_COOKIE['logged_user_id'];
-        $quiz = new Quiz($test, $uid); 
+        $stat = new Stat($test, $uid); 
       }
     }
     else
@@ -28,10 +28,30 @@
     }
 
     $closed = 0;          //флажок для возможности закрывать доступ к тесту
-    $already_started = 0; //случай когда тест уже проходили (с данного аккаунта), предлагаем сбросить или продолжить 
 
     if($errors)
       echo "<center>" . array_shift($errors) . "</center>";
+
+    //блок кода после нажатия кнопки "отправить тест"
+    if(isset($_POST['send']))
+    {
+        if(isset($_COOKIE['logged_user_id']))
+        {
+          //var_dump($_POST);
+          $uid = $_COOKIE['logged_user_id'];
+          $current_time = date('Y-m-d H:i:s');
+
+          $score = $stat->get_score();
+          $mark = $stat->get_mark();
+
+          //отмечаем данный тест как завершенный в бд
+          $test_result = R::exec("UPDATE `user_test_result` SET `score_points`=?, `exam_points`=?, `test_status_id`='2', `last_finish_time`=? WHERE uid=? and test_id=?", [$score, $mark, $current_time, $_COOKIE['logged_user_id'], $test->id]);
+        }
+                
+        //перенаправление на страницу результатов
+        echo '<script>window.location.replace("results.php?id='. $test->id . ');</script>';
+        header('Location: results.php?id='. $test->id);
+    }
 
     //var_dump($_POST);
     //var_dump($test);
@@ -74,208 +94,8 @@
     <div class="container col-lg-9 mx-auto">
       <div class="text-center mb-3 bg-light rounded p-2">
           <?php 
-            //блок кода после нажатия кнопки "отправить тест"
-            if(isset($_POST['send']))
-            //if(1)
-            {
-                if(isset($_COOKIE['logged_user_id']))
-                {
-                  //var_dump($_POST);
-                  $uid = $_COOKIE['logged_user_id'];
-                  $current_time = date('Y-m-d H:i:s');
-
-                  //отмечаем данный тест как завершенный в бд
-                  $test_result = R::exec("UPDATE `user_test_result` SET `test_status_id`='2', `last_finish_time`=? WHERE uid=? and test_id=?", [$current_time, $_COOKIE['logged_user_id'], $test->id]);
-
-                  $user_test_result = R::getRow("select * from user_test_result WHERE uid=? and test_id=?", [$_COOKIE['logged_user_id'], $test->id]);
-
-                  $formatted_last_start_time = $quiz->get_formatted_datetime_from_sql($user_test_result['last_start_time']);
-                  $formatted_last_finish_time = $quiz->get_formatted_datetime_from_sql($user_test_result['last_finish_time']);
-
-                  $difference_msg = $quiz->get_formatted_datetime_difference_from_sql($user_test_result['last_finish_time'], $user_test_result['last_start_time']);
-
-                  $status = $quiz->get_status($user_test_result['test_status_id']);
-
-                  //вычисление макс оценки за экзамен
-                  $max_exam_points = $quiz->get_max_exam_points();
-
-                  //макс к-ство рейтинговых баллов
-                  $max_score_points = $quiz->get_max_score_points();
-
-                  //вычисление полученных баллов за экзамен
-                  $mark = $quiz->get_mark();
-                  $score_points = $quiz->get_score();
-
-                  //количество правильных ответов
-                  $correct_answers_amount = $quiz->get_correct_answers_amount();
-
-                  //общее количество вопросов
-                  $questions_amount = $quiz->test->tickets_amount;
-
-                  $mark_msg = '';
-                  //если установлен режим экзамена
-                  if($test->config->testing_for_exam_points)
-                  {
-                    $reward_name = "Оцінка";
-                    if($max_exam_points > 0)
-                    {
-                      $mark_in_procents = (($mark/$max_exam_points) * 100);
-
-                      $mark_msg = '<strong>' . number_format($mark, 2) . '</strong> із ' . $max_exam_points . ' балів <strong>(' . number_format($mark_in_procents, 1) . '%)</strong>';
-                    }
-                    else
-                    {
-                      $mark_msg = 'Оцінювання не було визначено автором тесту';
-                    }
-                  }
-                  else
-                  {
-                    //показываем рейтинговые баллы
-                    $reward_name = "Рейтингові бали";
-                    if($max_score_points > 0)
-                    {
-                      $score_in_procents = (($score_points/$max_score_points) * 100);
-
-                      $mark_msg = '<strong>' . number_format($score_points, 2) . '</strong> з ' . $max_score_points . ' можливих <strong>(' . number_format($score_in_procents, 1) . '%)</strong>';
-                    }
-                    else
-                    {
-                      $mark_msg = 'Нарахування рейтингових балів для цього тесту ще не було призначено адміністрацією сайту';
-                    }               
-                  }
-                  
-                  echo '<div class="container col-lg-6 mx-auto">
-                          <div class="card-header">
-                            <h3 class="my-2">' . $test->name . '</h3>
-                          </div>
-                          <table class="table table-hover table-bordered">
-                            <tbody>
-                              <tr>
-                                <th scope="row">Тест розпочато</th>
-                                <td>' . $formatted_last_start_time . '</td>
-                              </tr>
-                              <tr>
-                                <th scope="row">Стан</th>
-                                <td>' . $status . '</td>
-                              </tr>
-                              <tr>
-                                <th scope="row">Завершено</th>
-                                <td>' . $formatted_last_finish_time . '</td>
-                              </tr>
-                              <tr>
-                                <th scope="row">Час виконання</th>
-                                <td>' . $difference_msg . '</td>
-                              </tr>
-                              <tr>
-                                <th scope="row">' . $reward_name . '</th>
-                                <td>' . $mark_msg . '</td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        
-                          <section class="successBar p-0">';
-                        //если процент неправильных ответов больше нуля
-                        if(100 * ($correct_answers_amount / $questions_amount) > 0)
-                          echo '
-                            <article class="correct" style="width:' . 100 * ($correct_answers_amount / $questions_amount) . '%;">
-                              ' . number_format(100 * ($correct_answers_amount / $questions_amount), 1) . '% (' . $correct_answers_amount . ')
-                            </article>';
-                        //если процент неправильных ответов больше нуля
-                        if(100 - 100 * ($correct_answers_amount / $questions_amount) > 0)
-                          echo '
-                            <article class="incorrect" style="width:' . 100 - 100 * ($correct_answers_amount / $questions_amount) . '%;">
-                              ' . number_format(100 - 100 * ($correct_answers_amount / $questions_amount), 1) . '% (' . $questions_amount - $correct_answers_amount . ')
-                            </article>';
-
-                        echo  '</section>
-
-                          <div class="display-5 my-3">Результати</div>
-
-                          <div>';
-
-                    //вывод результатов ответов по каждому вопросу
-                    for($i = 0; $i < $test->tickets_amount; $i++)
-                    {
-                        echo   '<div class="bg-white rounded card-body border mb-3 p-0 px-3">';
-                        
-                        //если есть картинка выводим ее
-                        if(!empty($test->tickets[$i]->picture_url))
-                            echo '<span><img src="../' . $test->tickets[$i]->picture_url .'"></span>';
-                        
-                        echo '<p class="roboto font-weight-500 my-3">' . $i+1 . '. ' . $test->tickets[$i]->question . ' </p>
-                                        <div class="box my-0">';
-                        for($j = 0; $j < $test->tickets[$i]->answers_amount; $j++)
-                        {
-                          echo '          <input  
-                                          type="radio" 
-                                          name=' . $test->tickets[$i]->id . ' 
-                                          id=' . ($i+1) . ($j+1) . ' 
-                                          value=' . $test->tickets[$i]->answers[$j]->id;
-                                          
-                          //если подгрузилась история ранее выбранных ответов
-                          if(!empty($quiz->previously_chosen_answer_ids)) 
-                          {
-                            //если текущий ответ был выбран ранее
-                            if(in_array($test->tickets[$i]->answers[$j]->id, $quiz->previously_chosen_answer_ids))
-                                echo " checked";   //отмечаем как выбранный
-                          }
-                          
-                          echo '      disabled    
-                                          >
-                                          <label for=' . ($i+1) . ($j+1) . '>';
-                          //если есть изображение - выводим его
-                          if(!empty($test->tickets[$i]->answers[$j]->picture_url))
-                              echo '<span><img src="../' . $test->tickets[$i]->answers[$j]->picture_url .'"></span>'; 
-                          
-                          echo  $test->tickets[$i]->answers[$j]->answer . '</label>';
-                        }
-                        echo '  </div>';
-
-                        //если ответили верно
-                        if($quiz->check_the_answer($test->tickets[$i]->id) == 1)
-                        {
-                          echo '<section class="alert alert-success alert-dismissible d-flex flex-column align-items-start fade show mt-3">
-                                    <article>
-                                      <i class="bi-check-circle-fill"></i>
-                                      <strong class="mx-2">Ваша відповідь правильна.</strong>
-                                    </article> 
-                                </section>';
-                        }
-                        //если ответили неверно
-                        else if($quiz->check_the_answer($test->tickets[$i]->id) == 0)
-                        {
-                          echo '<section class="alert alert-danger alert-dismissible d-flex flex-column align-items-start fade show mt-3">
-                                    <article class="mb-2">
-                                      <i class="bi-exclamation-octagon-fill"></i>
-                                      <strong class="mx-2">Ваша відповідь неправильна.</strong>
-                                    </article> 
-                                    <span class="text-start"><small>Правильна відповідь: ' . $quiz->get_correct_answer($test->tickets[$i]->id)->answer . '</small></span>
-                                </section>';
-                        }
-                        else
-                        //если пропустили вопрос
-                        {
-                          echo '<section class="alert alert-danger alert-dismissible d-flex flex-column align-items-start fade show mt-3">
-                                    <article>
-                                      <i class="bi-exclamation-octagon-fill"></i>
-                                      <strong class="mx-2">Питання пропущено.</strong>
-                                    </article> 
-                                </section>';
-                        }
-
-                        echo '</div>';
-                        }
-                        echo  '</div>
-                            </div>';
-                    }
-                    else
-                    {
-                      echo '<p class="display-3">Дякуємо!</p></br>
-                            <p>Для отримання більш детальних результатів, зберігання історії тестувань, ведення статистики - зареєструйтесь на нашому сайті</p>';
-                    }
-            }
-            //иначе проводим тестирование
-            else if(isset($_GET['id']) && $test_sql)
+            //проводим тестирование
+            if(isset($_GET['id']) && $test_sql)
             {              
               //если тест начат
               if(isset($_POST['start']) || isset($_POST['continue']))
@@ -285,7 +105,7 @@
                 {
                   //обнуляем все предыдущие результаты
                   R::exec("DELETE FROM `user_test_result` WHERE uid=? and test_id=?", [$_COOKIE['logged_user_id'], $test->id]);
-                  unset($quiz->previously_chosen_answer_ids);
+                  unset($stat->previously_chosen_answer_ids);
 
                   //отмечаем время начала тестирования в бд
                   $current_time = date('Y-m-d H:i:s');
@@ -301,7 +121,7 @@
 
                         <!-- непосредственно пошаговая форма тестирования -->
                         <form id="testingForm" method="post">
-                          <div class="card box-shadow mb-3">
+                          <div class="card box-shadow">
                             <div class="card-header">
                               <h3 class="my-2"><?php echo $test->name; ?></h3>
                             </div>
@@ -310,7 +130,7 @@
                                 <!-- One "tab" for each step in the form: -->
                                 <div class="tab">
                                   <?php if(!empty($test->tickets[$i]->picture_url))
-                                                echo '<span><img src="../' . $test->tickets[$i]->picture_url .'"></span>'; ?>
+                                                echo '<span><img class="w-50" style="max-width:300px;" src="../' . $test->tickets[$i]->picture_url .'"></span>'; ?>
                                   <p class="roboto font-weight-500 my-3"> <?php echo $i+1 . '. ' . $test->tickets[$i]->question; ?> </p>
                                   
                                   <div class="box my-0">
@@ -329,10 +149,10 @@
                                       value=<?php echo $test->tickets[$i]->answers[$j]->id; ?>
                                       <?php 
                                       //если подгрузилась история ранее выбранных ответов
-                                      if(!empty($quiz->previously_chosen_answer_ids)) 
+                                      if(!empty($stat->previously_chosen_answer_ids)) 
                                       {
                                         //если текущий ответ был выбран ранее
-                                        if(in_array($test->tickets[$i]->answers[$j]->id, $quiz->previously_chosen_answer_ids))
+                                        if(in_array($test->tickets[$i]->answers[$j]->id, $stat->previously_chosen_answer_ids))
                                           echo " checked";   //отмечаем как выбранный
                                       }
                                       ?>
@@ -350,8 +170,8 @@
                           </div>
 
                           <div class='row'>
-                              <div class="col-md-6"><button type="button" id="prevBtn" class="btn btn-outline-secondary px-5" onclick="nextPrev(-1)">Попереднє питання</button></div>
-                              <div class="col-md-6"><button type="button" id="nextBtn" class="btn btn-outline-primary px-5" onclick="nextPrev(1)">Пропустити</button></div>
+                              <div class="col-md-6 mt-3"><button type="button" id="prevBtn" class="btn btn-outline-secondary px-5" onclick="nextPrev(-1)">Попереднє питання</button></div>
+                              <div class="col-md-6 mt-3"><button type="button" id="nextBtn" class="btn btn-outline-primary px-5" onclick="nextPrev(1)">Пропустити</button></div>
                           </div>
 
                           <!-- Circles which indicates the steps of the form: -->
@@ -381,22 +201,15 @@
                   {
                       $uid =  $_COOKIE['logged_user_id'];
 
-                      $query = "select test_status_id, in_favourite_list from user_test_result where test_id = $test->id and uid = $uid";
-                      $status = R::getRow($query) ? R::getRow($query) : 0;
-                      
-                      //если пользователь уже начинал проходить этот тест
-                      if($status)
-                        $already_started = 1;
-
                       //если тест уже начали проходить
-                      if($status)
+                      if($stat->status)
                       {
-                        $in_favourite_list = $status['in_favourite_list'];
+                        $in_favourite_list = $stat->in_favourite_list;
                         
                         if($in_favourite_list == 1)
                           $test_status[] = 'Зі списку "Пройти пізніше"';
 
-                        switch ($status['test_status_id']) 
+                        switch ($stat->status) 
                         {
                           case '1':
                             $test_status[] = 'Ви вже почали проходити тест і не завершили його';
@@ -406,8 +219,8 @@
                             if($test->config->testing_for_exam_points)
                             {
                               //выводим оценку
-                              $mark = $quiz->get_mark();
-                              $max_exam_points = $quiz->get_max_exam_points();
+                              $mark = $stat->get_mark();
+                              $max_exam_points = $stat->get_max_exam_points();
 
                               $reward_name = "Оцінка";
                               if($max_exam_points > 0)
@@ -424,8 +237,8 @@
                             else
                             {
                               //показываем рейтинговые баллы
-                              $score_points = $quiz->get_score();
-                              $max_score_points = $quiz->get_max_score_points();
+                              $score_points = $stat->get_score();
+                              $max_score_points = $stat->get_max_score_points();
 
                               $reward_name = "Рейтингові бали";
                               if($max_score_points > 0)
@@ -537,7 +350,7 @@
 
                         if(!$closed)
                           //случай когда еще не проходили (с данного аккаунта)
-                          if(!$already_started)
+                          if(!$stat->status)
                             {
                               echo '<article class="mb-5">
                                       <form action="" method="post">
@@ -551,26 +364,30 @@
                                echo '<article class="mb-5">
                                       <form action="" method="post">
                                       <section class="d-flex flex-row">
-                                          <button name="start" class="btn btn-outline-primary py-2 px-5 mt-4 mx-5"><span class="lead">Почати заново</span></button>
-                                          <button name="continue" class="btn btn-primary py-2 px-5 mt-4 mx-5"><span class="lead">Продовжити</span></button>
-                                      </section>
+                                          <button name="start" class="btn btn-outline-primary py-2 px-5 mt-4 mx-5"><span class="lead">Почати заново</span></button>';
+                                //якщо тест не завершено
+                                if($stat->status == 1)
+                                  echo '<button name="continue" class="btn btn-primary py-2 px-5 mt-4 mx-5"><span class="lead">Продовжити</span></button>';
+                                else
+                                  echo '<a href="results.php?id='. $test->id .'" class="btn btn-primary py-2 px-5 mt-4 mx-5"><span class="lead">Результати</span></a>';
+                                echo '</section>
                                       </form>
                                     </article>';
                           }
 
                 echo    '
                         <hr width=100%>
-                        <div class="row py-3">
-                          <div class="alert alert-info alert-dismissible d-flex flex-column align-items-start fade show col-md-5 mx-3 mb-0" role="alert">
+                        <div class="row py-3 mx-auto">
+                          <div class="alert alert-info alert-dismissible d-flex flex-column align-items-start fade show col-md-5 mx-auto mb-0" role="alert">
                             <article class="mb-2">
                               <i class="bi-info-circle-fill"></i>
                               <strong class="mx-2">Info</strong>
                             </article> 
                             <span class="text-start"><small>' . $info_message . '</small></span>
                           </div>
-                          <article class="card-header text-start col-md-6 p-3">
+                          <div class="card-header text-start col-md-5 mx-auto p-3">
                            <span class="roboto">' . $test->description . '</span>
-                          </article>
+                          </div>
                         </div>
                         <hr width=100%>
                         

@@ -1,175 +1,105 @@
+<?php 
+	require_once "libs/rb.php";           //подключение библиотеки RedBean PHP
+    require_once "blocks/db.php"; 
+    require "tests/class_description.php";
+
+	//количество лучших игроков на вывод в таблицу
+	$top = 10;
+
+	//сбор статистики всех пользователей по сайту
+	$topstats = R::getAll("select uid, sum(score_points) as score, count(*) as count from `user_test_result` group by uid order by score desc limit ?", [$top]);
+
+	//максимально возможное к-ство рейтинга
+	$maxscore = R::getRow("select sum(reward_score_points) as sum from `ticket`")['sum'];
+
+	//количество всех тестов ( считая нерейтинговых)
+	$open_tests_count = R::getRow("select count(*) as count from `test` where 1")['count'];
+
+	//цвета рейтинга (соответствие цвета к проценту набранного рейтинга от макс. возможного) (фиол/син/зел/жел/оранж)
+	$rating_color = array(
+		'#d042f3' => 0.95,
+		'#02c9b3' => 0.85,
+		'#60ff00' => 0.75,
+		'#f8f403' => 0.65,
+		'#fe7903' => 0.6,
+	);
+?>
+
+<style type="text/css">
+	td{font-weight: bold;}
+</style>
+
 <div class="container col-mg-7 p-3">
-<div class="chartTab"> <!--Global Stats-->
-	<h1>Глобальна статистика</h1>
-	<table class="chart-table">
-	<?php
-		$percentageArray = array();
-			
-		$tests = R::getAll("SELECT id FROM test");
+  <div class=""> <!--Global rating-->
+  	<h1 class="display-4">Глобальний рейтинг</h1>
+  	<small class="text-muted h4 p-1">ТОП-10 ПО САЙТУ</small>
+	<table class="table table-striped mt-3" style="table-layout: fixed;">
+	  <thead class="border border-dark">
+	    <tr>
+	      <th scope="col">Місце</th>
+	      <th scope="col">Користувач</th>
+	      <th scope="col">Рейтинг</th>
+	      <th scope="col">Пройдено тестів</th>
+	    </tr>
+	  </thead>
+	  <tbody>
+	  	<?php 
+	  	$i = 0;
+	  	foreach ($topstats as $row) 
+	  	{
+	  		$username = R::getRow("select username from `user` where id=?", [$row['uid']])['username'];
+	  		$rating = $row['score'];
+	  		$count = $row['count'];		//к-ство пройденных тестов
 
-		echo '<tr>';
-		foreach ($tests as $test) 
-		{
-			$testid = $test['id'];
-			echo '
-					<td>
-					<div class="chart-back">
-					<div class="chart-front" id="globalChart' . $testid .'">
-				';
+	  		//процент полученного рейтинга по сравнению с максимально допустимым
+	  		$current_to_max_rating = $rating / $maxscore;
 
-			$answers = R::getAll("SELECT SUM(answer.is_correct) as summa, COUNT(ticket_result.ticket_id) as answer_count 
-							FROM ((answer_result INNER JOIN (ticket_result)
-							ON (ticket_result.id = answer_result.ticket_result_id)) INNER JOIN answer
-							ON answer_result.chosen_answer_id = answer.id) 
-							WHERE ticket_result.ticket_id IN (SELECT id FROM ticket WHERE test_id = $testid)
-							GROUP BY ticket_result.user_test_result_id");
-			if($answers)
-			{
-				$percentageSum = 0;
-				$iter = 0;
-				foreach ($answers as $value) 
-				{
-					$percentageSum += $value['summa'] / $value['answer_count'] * 100;
-					$iter++;
-				}
-				$percentage = $percentageSum / $iter;
-				$formatedPercentage = number_format($percentage, 2);
-				echo $formatedPercentage;
-				echo '%';
+	  		//процент пройденных тестов по сравнению с максимально допустимым
+	  		$current_to_max_count = $count / $open_tests_count;
 
-				array_push($percentageArray, $formatedPercentage);
-			}
+	  		echo '
+	  		<tr ';
 
-			echo '			</div>
-						</div>
-					</td>';								
-		}
-		echo '</tr>';
-		echo '<tr>';
-		foreach ($tests as $test) 
-		{
-			$testid = $test['id'];
-			$testname = R::getAll("SELECT name FROM test WHERE id = $testid");
-			foreach ($testname as $testn)
-				echo '<td>' . $testn['name'] . '</td>';
-		}
-		echo '</tr>';
-		?>
-					
-		<script type="text/javascript">
-			var percentageArray = [];
-						
-			<?php foreach ($percentageArray as $per) : ?>
-				percentageArray.push(['<?php echo $per?>']);
-			<?php endforeach; ?>
+	  		//окрашивание топ-3 мест
+	  		if($i == 0) 
+				echo 'style="background: #FFD700;" class="bg-gradient"';
+	  		if($i == 1)
+	  			echo 'style="background: #c0c0c0;" class="bg-gradient"';
+	  		if($i == 2)
+	  			echo 'style="background: #b87333;" class="bg-gradient"';
 
-			for (i = 0; i < percentageArray.length; i++)
-			{
-				var chartblock = document.getElementById('globalChart' + (i+1));
-				console.log(percentageArray[i]);
-				chartblock.style.height = percentageArray[i]+'%';
-			}
-		</script>
+	  		echo '>
+		      <th scope="row">'. ($i + 1) .'</th>
+		      <td>@'. $username .'</td>
+		      <td ';
+
+		    //окрашивание рейтинга
+		    foreach ($rating_color as $color => $coef) 
+		    	if($current_to_max_rating >= $coef)
+		    	{
+		    		echo 'style="color:'. $color .';"';
+		    		break;
+		    	}
+
+		    echo '>'. $rating .'</td>
+		      <td ';
+
+		    //окрашивание к-ства пройденных тестов от максимально возможных
+		    foreach ($rating_color as $color => $coef) 
+		    	if($current_to_max_count >= $coef)
+		    	{
+		    		echo 'style="color:'. $color .';"';
+		    		break;
+		    	}
+
+		    echo '>'. $count .'</td>
+		    </tr>
+	  		';
+
+	  		$i += 1;
+	  	}
+	  	?>
+	  </tbody>
 	</table>
-</div>
-
-			<div class="chartTab"> <!--Self Stats-->
-				<h1>Моя Статистика</h1>
-				<table class="chart-table m-3">
-					<?php
-						if(isset($_COOKIE['logged_user_id']))
-						{
-							$userID = $_COOKIE['logged_user_id'];
-
-							$percentageArray = array();
-							$userTests = array();
-
-							$tests = R::getAll("SELECT id FROM test");
-
-							echo '<tr>';
-							foreach ($tests as $test) 
-							{
-								$testid = $test['id'];
-
-								$answers = R::getAll("SELECT SUM(answer.is_correct) as summa, COUNT(ticket_result.ticket_id) as answer_count 
-								FROM ((answer_result INNER JOIN (ticket_result)
-								ON (ticket_result.id = answer_result.ticket_result_id)) INNER JOIN answer
-								ON answer_result.chosen_answer_id = answer.id) 
-								WHERE ticket_result.ticket_id IN (SELECT id FROM ticket WHERE test_id = $testid)
-								AND ticket_result.user_test_result_id in (SELECT id FROM user_test_result WHERE uid = $userID)");
-								
-								if($answers && $answers[0]['answer_count'] != '0')
-								{
-									echo '
-									<td>
-										<div class="chart-back">
-											<div class="chart-front" id="selfChart' . $testid .'">
-												AVG
-												';
-									
-									$percentageSum = 0;
-									$iter = 0;
-									foreach ($answers as $value) 
-									{
-										$percentageSum += $value['summa'] / $value['answer_count'] * 100;
-										$iter++;
-									}
-									$percentage = $percentageSum / $iter;
-									$formatedPercentage = number_format($percentage, 2);
-									
-									echo $formatedPercentage;
-									echo '%';
-									
-									echo '	</div>
-										</div>
-									</td>';
-
-									array_push($percentageArray, $formatedPercentage);
-									array_push($userTests, $testid);
-								}
-							}
-							echo '</tr>';
-
-							echo '<tr>';
-							foreach ($userTests as $userTestID) 
-							{
-								$testname = R::getAll("SELECT name FROM test WHERE id = $userTestID");
-								foreach ($testname as $testn)
-								{
-									echo '<td>' . $testn['name'] . '</td>';
-								}
-							}
-							echo '</tr>';
-
-							if (empty($userTests))
-							{
-								echo 'Ви ще не пройшли жодного тесту';
-							}
-						}
-						else
-						{
-							echo 'Для перегляду особистого рейтингу - зареєструйтесь на сайті';
-						}
-
-					?>
-					<script type="text/javascript">
-						var percentageArray = [];
-						var testIDArray = [];
-						
-						<?php foreach ($percentageArray as $per) : ?>
-						percentageArray.push(['<?php echo $per?>']);
-						<?php endforeach; ?>
-
-						<?php foreach ($userTests as $testid) : ?>
-							testIDArray.push(['<?php echo $testid?>']);
-						<?php endforeach; ?>
-
-						for (i = 0; i < percentageArray.length; i++)
-						{
-							var chartblock = document.getElementById('selfChart' + testIDArray[i]);
-							chartblock.style.height = percentageArray[i]+'%';
-						}
-					</script>
-				</table>
-			</div>
+  </div>
 </div>

@@ -139,11 +139,12 @@
     }
 
     //для обощенной работы с тестом и активностью авторизованного пользователя
-    class Quiz
+    class Stat
     {
-      public $test, $uid, $previously_chosen_answer_ids, $correct_answer_ids;
+      public $test, $uid, $previously_chosen_answer_ids, 
+             $correct_answer_ids, $status, $in_favourite_list;
 
-      public function __construct($test, $uid)
+      public function __construct($test = array(), $uid = null)
       {
         if($test)
         {
@@ -152,10 +153,19 @@
           $this->previously_chosen_answer_ids = array();
           $this->correct_answer_ids = $this->get_correct_answer_ids();
 
-          if($uid)
+          if($this->uid)
           {
             //загрузка истории выбранных ответов
             $this->previously_chosen_answer_ids = $this->get_previously_chosen_answer_ids();
+
+            $this->status = R::getRow("select test_status_id, in_favourite_list from user_test_result where test_id = ? and uid = ?", [$this->test->id, $this->uid]);
+                      
+            //если пользователь уже начинал проходить этот тест
+            if($this->status)
+            {
+                $this->in_favourite_list = $this->status['in_favourite_list']; 
+                $this->status = $this->status['test_status_id'];
+            }
           }
         }
       }
@@ -269,14 +279,25 @@
       }
 
       //метод получения айди ответов на вопросы к результату текущего прохождения теста
-      public function get_chosen_answer_ids()
+      public function get_chosen_answer_ids($uid = null, $test_id = null)
       {
+        //массив ранее выбранных ответов
+        $chosen_answer_ids = array();
+
+        if(is_null($test_id) and is_null($uid))
+        {
+          $test_id = $this->test->id;
+          $uid = $this->uid;
+        }
+
         //результат текущего прохождения теста
-        $user_test_result = R::getRow("select id from user_test_result where test_id=? and uid=?", [$this->test->id, $this->uid]);
+        $user_test_result = R::getRow("select id from user_test_result where test_id=? and uid=?", [$test_id, $uid]);
 
         //получаем id записи о результате прохождения теста пользователем
         if(isset($user_test_result['id']))
           $user_test_result_id = $user_test_result['id'];
+        else
+          return $chosen_answer_ids;
                   
         //получаем массив результатов вопросов, на которые ранее были даны ответы
         $ticket_results = R::getAll("select id from ticket_result where user_test_result_id=? order by id", [$user_test_result_id]);
@@ -292,7 +313,6 @@
           $chosen_answers[] = R::getRow("select chosen_answer_id from answer_result where ticket_result_id=?", [$ticket_result_id]);
                   
         //получаем их id
-        $chosen_answer_ids = array();
         foreach ($chosen_answers as $chosen_answer) 
           $chosen_answer_ids[] = $chosen_answer['chosen_answer_id'];
 
@@ -319,12 +339,18 @@
         return $max_score_points;
       }
 
-      public function get_mark()
+      public function get_mark($uid = null, $test_id = null)
       {
+        if(is_null($test_id) and is_null($uid))
+        {
+          $test_id = $this->test->id;
+          $uid = $this->uid;
+        }
+
         //вычисление полученной оценки за экзамен
         $mark = 0;
 
-        $chosen_answer_ids = $this->get_chosen_answer_ids();
+        $chosen_answer_ids = $this->get_chosen_answer_ids($uid, $test_id);
                 
         foreach ($chosen_answer_ids as $chosen_answer_id) 
         {
@@ -343,13 +369,19 @@
         return $mark;
       }
 
-      public function get_score()
+      public function get_score($uid = null, $test_id = null)
       {
-        //вычисление полученных баллов за экзамен
+        if(is_null($test_id) and is_null($uid))
+        {
+          $test_id = $this->test->id;
+          $uid = $this->uid;
+        }
+
+        //вычисление полученных рейтинговых баллов
         $score = 0;
 
-        $chosen_answer_ids = $this->get_chosen_answer_ids();
-                
+        $chosen_answer_ids = $this->get_chosen_answer_ids($uid, $test_id);
+
         foreach ($chosen_answer_ids as $chosen_answer_id) 
         {
           $answer = R::getRow("select * from answer where id=?", [$chosen_answer_id]);
