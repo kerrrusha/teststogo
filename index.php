@@ -45,7 +45,7 @@
 			<div class="col-md-3 p-0"><a href="#tab-1">Головна сторінка</a></div>
 			<div class="col-md-3 p-0"><a href="#tab-2">Статистика</a></div>
 			<div class="col-md-3 p-0"><a href="#tab-3">Мій аккаунт</a></div>
-			<div class="col-md-3 p-0"><a href="#tab-4">Інформація</a></div>
+			<div class="col-md-3 p-0"><a href="#tab-4">Створити тест</a></div>
 		</div>
 		
 		<!-- Контент -->
@@ -60,7 +60,7 @@
 				<?php require "blocks/profile.php"; ?>
 			</div>	
 			<div class="tabs-item" id="tab-4">
-				<?php require "blocks/about.php"; ?>
+				<?php require "blocks/new.php"; ?>
 			</div>		
 	    </div> 
 	</div>

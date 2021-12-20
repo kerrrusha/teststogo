@@ -170,6 +170,75 @@
         }
       }
 
+      public static function time_since_registered($uid)
+      {
+        $result = '';
+
+        $register_time = R::getRow("select creating_date from `user` where id=?", [$uid]);
+        if($register_time)
+          $register_time = $register_time['creating_date'];
+        else
+          return $result;
+        
+        $current_time = date("Y-m-d H:i:s");
+
+        $difference = Stat::get_formatted_datetime_difference_from_sql($current_time, $register_time);
+        $search = "дн.";
+
+        //позиция в строке после слова $search
+        $position = mb_strpos($difference, $search) + mb_strlen($search);
+
+        //получаем значение строки до дней
+        if(mb_strpos($difference, $search) > 0)   //если было найдено слово $search (зареган на сайте более суток)
+          $result = mb_substr($difference, 0, $position);
+        else
+          $result = '0 дн.';
+
+        return $result;
+      }
+
+      public static function get_formatted_datetime_from_sql($sql_datetime)
+      {
+        // creating new date objects
+        $datetime = new DateTime($sql_datetime);
+
+        //now you can use format on that objects:
+        return $datetime->format('d.m.Y H:i:s');
+      }
+
+      //(a - b) datetime difference
+      public static function get_formatted_datetime_difference_from_sql($a, $b)
+      {
+        $a = new DateTime($a);
+        $b = new DateTime($b);
+
+        $difference = [
+                        "day" => $a->diff($b)->format('%d'),
+                        "month" => $a->diff($b)->format('%m'),
+                        "year" => $a->diff($b)->format('%y'),
+                        "h" => $a->diff($b)->format('%h'),
+                        "m" => $a->diff($b)->format('%i'),
+                        "s" => $a->diff($b)->format('%s')
+                      ];
+        //форматированное сообщение на вывод
+        $difference_msg = '';
+        
+        if($difference['day'] > 0)
+          $difference_msg .= $difference['day'] . ' дн. ';
+        if($difference['month'] > 0)
+          $difference_msg .= $difference['month'] . ' міс. ';
+        if($difference['year'] > 0)
+          $difference_msg .= $difference['year'] . ' р. ';
+        if($difference['h'] > 0)
+          $difference_msg .= $difference['h'] . ' год. ';
+        if($difference['m'] > 0)
+          $difference_msg .= $difference['m'] . ' хв. ';
+        if($difference['s'] > 0)
+          $difference_msg .= $difference['s'] . ' сек. ';
+
+        return $difference_msg;
+      }
+
       public function get_previously_chosen_answer_ids()
       {
         $previously_chosen_answer_ids = array();
@@ -424,48 +493,6 @@
       public function get_status($test_status_id)
       {
         return R::getRow("select name from test_status WHERE id=?", [$test_status_id])['name'];
-      }
-
-      public function get_formatted_datetime_from_sql($sql_datetime)
-      {
-        // creating new date objects
-        $datetime = new DateTime($sql_datetime);
-
-        //now you can use format on that objects:
-        return $datetime->format('d.m.Y H:i:s');
-      }
-
-      //(a - b) datetime difference
-      public function get_formatted_datetime_difference_from_sql($a, $b)
-      {
-        $a = new DateTime($a);
-        $b = new DateTime($b);
-
-        $difference = [
-                        "day" => $a->diff($b)->format('%d'),
-                        "month" => $a->diff($b)->format('%m'),
-                        "year" => $a->diff($b)->format('%y'),
-                        "h" => $a->diff($b)->format('%h'),
-                        "m" => $a->diff($b)->format('%i'),
-                        "s" => $a->diff($b)->format('%s')
-                      ];
-        //форматированное сообщение на вывод
-        $difference_msg = '';
-        
-        if($difference['day'] > 0)
-          $difference_msg .= $difference['day'] . ' дн. ';
-        if($difference['month'] > 0)
-          $difference_msg .= $difference['month'] . ' міс. ';
-        if($difference['year'] > 0)
-          $difference_msg .= $difference['year'] . ' р. ';
-        if($difference['h'] > 0)
-          $difference_msg .= $difference['h'] . ' год. ';
-        if($difference['m'] > 0)
-          $difference_msg .= $difference['m'] . ' хв. ';
-        if($difference['s'] > 0)
-          $difference_msg .= $difference['s'] . ' сек. ';
-
-        return $difference_msg;
       }
     }
 ?>

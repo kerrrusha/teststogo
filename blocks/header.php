@@ -21,7 +21,7 @@
               <a class="nav-link" href="../index.php#tab-3">МІЙ АККАУНТ</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="../index.php#tab-4">ІНФОРМАЦІЯ</a>
+              <a class="nav-link" href="../index.php#tab-4">СТВОРИТИ ТЕСТ</a>
             </li>
             <!-- <li class="nav-item dropdown">
 	            <a class="nav-link dropdown-toggle" href="" id="dropdown04" data-bs-toggle="dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dropdown</a>

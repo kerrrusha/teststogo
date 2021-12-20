@@ -2,6 +2,8 @@
 	require_once "libs/rb.php";           //подключение библиотеки RedBean PHP
     require_once "blocks/db.php"; 
     require "tests/class_description.php";
+Stat::time_since_registered(9);
+    $stat = new Stat();
 
 	//количество лучших игроков на вывод в таблицу
 	$top = 10;
@@ -27,19 +29,27 @@
 
 <style type="text/css">
 	td{font-weight: bold;}
+	
+	/* For Mobile */
+	@media screen and (max-width: 540px) 
+	{
+    	* {font-size:0.8rem;}
+    }
+}
 </style>
 
 <div class="container col-mg-7 p-3">
   <div class=""> <!--Global rating-->
   	<h1 class="display-4">Глобальний рейтинг</h1>
   	<small class="text-muted h4 p-1">ТОП-10 ПО САЙТУ</small>
-	<table class="table table-striped mt-3" style="table-layout: fixed;">
+	<table class="table table-striped mt-3" style="table-layout: fixed; font-size: 1rem;">
 	  <thead class="border border-dark">
 	    <tr>
 	      <th scope="col">Місце</th>
 	      <th scope="col">Користувач</th>
 	      <th scope="col">Рейтинг</th>
 	      <th scope="col">Пройдено тестів</th>
+	      <th scope="col">На сайті</th>
 	    </tr>
 	  </thead>
 	  <tbody>
@@ -62,11 +72,11 @@
 
 	  		//окрашивание топ-3 мест
 	  		if($i == 0) 
-				echo 'style="background: #FFD700;" class="bg-gradient"';
+				echo 'style="background-color: rgba(255, 215, 0, 0.5);"';
 	  		if($i == 1)
-	  			echo 'style="background: #c0c0c0;" class="bg-gradient"';
+	  			echo 'style="background-color: rgba(192, 192, 192, 0.5);"';
 	  		if($i == 2)
-	  			echo 'style="background: #b87333;" class="bg-gradient"';
+	  			echo 'style="background-color: rgba(184, 115, 51, 0.3);"';
 
 	  		echo '>
 		      <th scope="row">'. ($i + 1) .'</th>
@@ -93,6 +103,7 @@
 		    	}
 
 		    echo '>'. $count .'</td>
+		    <td>'. Stat::time_since_registered($row['uid']) .'</td>
 		    </tr>
 	  		';
 
