@@ -28,7 +28,7 @@ Stat::time_since_registered(9);
 ?>
 
 <style type="text/css">
-	td{font-weight: bold;}
+	#stat td{font-weight: bold!important;}
 	
 	/* For Mobile */
 	@media screen and (max-width: 540px) 
@@ -52,7 +52,7 @@ Stat::time_since_registered(9);
 	      <th scope="col">На сайті</th>
 	    </tr>
 	  </thead>
-	  <tbody>
+	  <tbody id='stat'>
 	  	<?php 
 	  	$i = 0;
 	  	foreach ($topstats as $row) 
