@@ -1,7 +1,6 @@
 <?php 
 	require_once "libs/rb.php";           //подключение библиотеки RedBean PHP
     require_once "blocks/db.php"; 
-    require "tests/class_description.php";
 Stat::time_since_registered(9);
     $stat = new Stat();
 
@@ -28,7 +27,10 @@ Stat::time_since_registered(9);
 ?>
 
 <style type="text/css">
-	#stat td{font-weight: bold!important;}
+	#stat td
+	{
+		font-weight: bold!important;
+	}
 	
 	/* For Mobile */
 	@media screen and (max-width: 540px) 
@@ -42,7 +44,7 @@ Stat::time_since_registered(9);
   <div class=""> <!--Global rating-->
   	<h1 class="display-4">Глобальний рейтинг</h1>
   	<small class="text-muted h4 p-1">ТОП-10 ПО САЙТУ</small>
-	<table class="table table-striped mt-3" style="table-layout: fixed; font-size: 1rem;">
+	<table class="table table-striped table-sm mt-3" style="table-layout: fixed; font-size: 1rem;">
 	  <thead class="border border-dark">
 	    <tr>
 	      <th scope="col">Місце</th>

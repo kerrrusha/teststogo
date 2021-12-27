@@ -99,32 +99,32 @@
                   //если установлен режим экзамена
                   if($test->config->testing_for_exam_points)
                   {
-                    $reward_name = "Оцінка";
-                    if($max_exam_points > 0)
-                    {
-                      $mark_in_procents = (($mark/$max_exam_points) * 100);
+                      $reward_name = "Оцінка";
+                      if($max_exam_points > 0)
+                      {
+                          $mark_in_procents = (($mark/$max_exam_points) * 100);
 
-                      $mark_msg = '<strong>' . number_format($mark, 2) . '</strong> із ' . $max_exam_points . ' балів <strong>(' . number_format($mark_in_procents, 1) . '%)</strong>';
-                    }
-                    else
-                    {
-                      $mark_msg = 'Оцінювання не було визначено автором тесту';
-                    }
+                          $mark_msg = '<strong>' . number_format($mark, 2) . '</strong> із ' . $max_exam_points . ' балів <strong>(' . number_format($mark_in_procents, 1) . '%)</strong>';
+                      }
+                      else
+                      {
+                          $mark_msg = 'Оцінювання не було визначено автором тесту';
+                      }
                   }
                   else
                   {
-                    //показываем рейтинговые баллы
-                    $reward_name = "Рейтингові бали";
-                    if($max_score_points > 0)
-                    {
-                      $score_in_procents = (($score_points/$max_score_points) * 100);
+                  //показываем рейтинговые баллы
+                      $reward_name = "Рейтингові бали";
+                      if($max_score_points > 0)
+                      {
+                          $score_in_procents = (($score_points/$max_score_points) * 100);
 
-                      $mark_msg = '<strong>' . number_format($score_points, 2) . '</strong> з ' . $max_score_points . ' можливих <strong>(' . number_format($score_in_procents, 1) . '%)</strong>';
-                    }
-                    else
-                    {
-                      $mark_msg = 'Нарахування рейтингових балів для цього тесту ще не було призначено адміністрацією сайту';
-                    }               
+                          $mark_msg = '<strong>' . number_format($score_points, 2) . '</strong> з ' . $max_score_points . ' можливих <strong>(' . number_format($score_in_procents, 1) . '%)</strong>';
+                      }
+                      else
+                      {
+                          $mark_msg = 'Нарахування рейтингових балів для цього тесту ще не було призначено адміністрацією сайту';
+                      }               
                   }
                   
                   echo '<div class="container col-lg-6 mx-auto">

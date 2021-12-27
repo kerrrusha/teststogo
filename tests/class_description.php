@@ -138,6 +138,20 @@
       }
     }
 
+    //расширение класса интервала с функцией корректного пересчета интервала (3600с -> 1ч)
+    class DateIntervalEnhanced extends DateInterval 
+      {
+          public function recalculate()
+          {
+              $from = new DateTime;
+              $to = clone $from;
+              $to = $to->add($this);
+              $diff = $from->diff($to);
+              foreach ($diff as $k => $v) $this->$k = $v;
+              return $this;
+          }
+      }
+
     //для обощенной работы с тестом и активностью авторизованного пользователя
     class Stat
     {
@@ -206,37 +220,116 @@
         return $datetime->format('d.m.Y H:i:s');
       }
 
+      public static function get_formatted_date_from_sql($sql_datetime)
+      {
+        // creating new date objects
+        $datetime = new DateTime($sql_datetime);
+
+        //now you can use format on that objects:
+        return $datetime->format('d.m.Y');
+      }
+
+      public static function get_dateinterval_message($interval)
+      {
+        $difference = [
+                        "day" => $interval->format('%d'),
+                        "month" => $interval->format('%m'),
+                        "year" => $interval->format('%y'),
+                        "h" => $interval->format('%h'),
+                        "m" => $interval->format('%i'),
+                        "s" => $interval->format('%s')
+                      ];
+        //форматированное сообщение на вывод
+        $dateinterval_msg = '';
+        
+        if($difference['day'] > 0)
+          $dateinterval_msg .= $difference['day'] . ' дн. ';
+        if($difference['month'] > 0)
+          $dateinterval_msg .= $difference['month'] . ' міс. ';
+        if($difference['year'] > 0)
+          $dateinterval_msg .= $difference['year'] . ' р. ';
+        if($difference['h'] > 0)
+          $dateinterval_msg .= $difference['h'] . ' год. ';
+        if($difference['m'] > 0)
+          $dateinterval_msg .= $difference['m'] . ' хв. ';
+        if($difference['s'] > 0)
+          $dateinterval_msg .= $difference['s'] . ' сек. ';
+
+        return $dateinterval_msg;
+      }
+
       //(a - b) datetime difference
       public static function get_formatted_datetime_difference_from_sql($a, $b)
       {
         $a = new DateTime($a);
         $b = new DateTime($b);
+        $diff = $a->diff($b);
 
-        $difference = [
-                        "day" => $a->diff($b)->format('%d'),
-                        "month" => $a->diff($b)->format('%m'),
-                        "year" => $a->diff($b)->format('%y'),
-                        "h" => $a->diff($b)->format('%h'),
-                        "m" => $a->diff($b)->format('%i'),
-                        "s" => $a->diff($b)->format('%s')
-                      ];
-        //форматированное сообщение на вывод
-        $difference_msg = '';
+        return Stat::get_dateinterval_message($diff);
+      }
+
+      public static function get_user_intest_time($uid)
+      {
+        $total_time = '-';
+        $today = new DateTime(date("Y-m-d H:i:s"));
+        $diff_sec = 0;
+
+        $user_stat = R::getAll('select last_finish_time, last_start_time from user_test_result where uid=?', [$uid]);
+        if($user_stat)
+        {
+          foreach ($user_stat as $row) 
+          {
+            $finish = new DateTime($row['last_finish_time']);
+            $start = new DateTime($row['last_start_time']);
+            $diff_sec += intval(($finish->diff($start))->format('%s'));
+          }
+          $diff_sec = new DateIntervalEnhanced("PT".$diff_sec."S");
+          $total_time = Stat::get_dateinterval_message($diff_sec->recalculate());
+        }
         
-        if($difference['day'] > 0)
-          $difference_msg .= $difference['day'] . ' дн. ';
-        if($difference['month'] > 0)
-          $difference_msg .= $difference['month'] . ' міс. ';
-        if($difference['year'] > 0)
-          $difference_msg .= $difference['year'] . ' р. ';
-        if($difference['h'] > 0)
-          $difference_msg .= $difference['h'] . ' год. ';
-        if($difference['m'] > 0)
-          $difference_msg .= $difference['m'] . ' хв. ';
-        if($difference['s'] > 0)
-          $difference_msg .= $difference['s'] . ' сек. ';
+        return $total_time;
+      }
 
-        return $difference_msg;
+      public function get_reward_name_and_mark_msg($uid, $test_id)
+      {
+        $test = new Test(R::getRow('select * from test where id = ?', [$test_id]));
+        $mark = $this->get_mark($uid, $test_id);
+        $max_exam_points = $this->get_max_exam_points($test_id);
+        $score_points = $this->get_score($uid, $test_id);
+        $max_score_points = $this->get_max_score_points($test_id);
+
+        //если установлен режим экзамена
+        if($test->config->testing_for_exam_points)
+        {
+            $reward_name = "Оцінка";
+            if($max_exam_points > 0)
+            {
+                $mark_in_procents = (($mark/$max_exam_points) * 100);
+
+                $mark_msg = '<strong>' . number_format($mark, 2) . '</strong> із ' . $max_exam_points . ' балів <strong>(' . number_format($mark_in_procents, 1) . '%)</strong>';
+            }
+            else
+            {
+                $mark_msg = 'Оцінювання не було визначено автором тесту';
+            }
+        }
+        else
+        {
+        //показываем рейтинговые баллы
+            $reward_name = "Рейтингові бали";
+            if($max_score_points > 0)
+            {
+                $score_in_procents = (($score_points/$max_score_points) * 100);
+
+                $mark_msg = '<strong>' . number_format($score_points, 2) . '</strong> з ' . $max_score_points . ' можливих <strong>(' . number_format($score_in_procents, 1) . '%)</strong>';
+            }
+            else
+            {
+                $mark_msg = 'Нарахування рейтингових балів для цього тесту ще не було призначено адміністрацією сайту';
+            }               
+        }
+
+        return array("reward_name"=>$reward_name, "mark_msg"=>$mark_msg);
       }
 
       public function get_previously_chosen_answer_ids()
@@ -388,21 +481,33 @@
         return $chosen_answer_ids;
       }
 
-      public function get_max_exam_points()
+      public function get_max_exam_points($test_id = null)
       {
+        if(is_null($test_id))
+        {
+          $test_id = $this->test->id;
+        }
+        $test = new Test(R::getRow("select * from test where id=?", [$test_id]));
+
         //вычисление макс оценки за экзамен
         $max_exam_points = 0;
-        foreach ($this->test->tickets as $ticket) 
+        foreach ($test->tickets as $ticket) 
             $max_exam_points += $ticket->exam_points;
         
         return $max_exam_points;
       }
 
-      public function get_max_score_points()
+      public function get_max_score_points($test_id = null)
       {
+        if(is_null($test_id))
+        {
+          $test_id = $this->test->id;
+        }
+        $test = new Test(R::getRow("select * from test where id=?", [$test_id]));
+
         //макс к-ство рейтинговых баллов
         $max_score_points = 0;
-        foreach ($this->test->tickets as $ticket) 
+        foreach ($test->tickets as $ticket) 
             $max_score_points += $ticket->reward_score_points;
 
         return $max_score_points;

@@ -45,7 +45,7 @@
 	        </div>
 	      </div>
 	      <div class="col-md-6">
-	        <div class="h-100 p-5 bg-light border rounded-3 d-flex flex-column justify-content-between">
+	        <div class="h-100 p-5 bg-white border rounded-3 d-flex flex-column justify-content-between">
 	          <h2>Абстрактний</h2>
 	          <p>Тест формату "дізнайся свій психотип" або "хто ти із серіалу" з унікальними методами оцінювання.</br>
 	          У питань немає правильної відповіді, а результати можна дізнатися лише після виконання тесту.</br>

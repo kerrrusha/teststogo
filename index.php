@@ -1,6 +1,7 @@
 <?php
 	require_once "libs/rb.php";   				//подключение библиотеки RedBean PHP
-  	require "blocks/db.php"; 
+  	require_once "blocks/db.php"; 
+    require_once "tests/class_description.php";
 ?>
 
 <!DOCTYPE html>
