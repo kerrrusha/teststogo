@@ -2,16 +2,23 @@
 -- version 5.1.1
 -- https://www.phpmyadmin.net/
 --
--- Хост: 127.0.0.1
--- Время создания: Дек 19 2021 г., 04:56
--- Версия сервера: 10.4.21-MariaDB
--- Версия PHP: 8.0.12
+-- Хост: 10.0.0.57
+-- Время создания: Дек 28 2021 г., 00:13
+-- Версия сервера: 5.7.35-38
+-- Версия PHP: 7.2.34
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
 --
--- База данных: `teststogo-db`
+-- База данных: `f0610890_teststogo-db`
 --
 
 -- --------------------------------------------------------
@@ -25,7 +32,7 @@ CREATE TABLE `answer` (
   `ticket_id` int(10) UNSIGNED NOT NULL,
   `picture_url` text NOT NULL,
   `answer` text NOT NULL,
-  `is_correct` tinyint(1) UNSIGNED NOT NULL DEFAULT 0
+  `is_correct` tinyint(1) UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -148,7 +155,7 @@ CREATE TABLE `answer_result` (
   `id` int(10) UNSIGNED NOT NULL,
   `chosen_answer_id` int(10) UNSIGNED NOT NULL,
   `ticket_result_id` int(10) UNSIGNED NOT NULL,
-  `creating_time` datetime NOT NULL DEFAULT current_timestamp()
+  `creating_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -235,17 +242,7 @@ INSERT INTO `answer_result` (`id`, `chosen_answer_id`, `ticket_result_id`, `crea
 (248, 60, 248, '2021-12-19 05:45:05'),
 (249, 53, 249, '2021-12-19 05:45:07'),
 (250, 63, 250, '2021-12-19 05:45:10'),
-(251, 48, 251, '2021-12-19 05:45:14'),
-(252, 5, 252, '2021-12-19 05:45:32'),
-(253, 4, 253, '2021-12-19 05:45:46'),
-(254, 11, 254, '2021-12-19 05:45:59'),
-(255, 32, 255, '2021-12-19 05:46:06'),
-(256, 17, 256, '2021-12-19 05:46:14'),
-(257, 16, 257, '2021-12-19 05:46:23'),
-(258, 35, 258, '2021-12-19 05:46:28'),
-(259, 40, 259, '2021-12-19 05:46:35'),
-(260, 22, 260, '2021-12-19 05:47:04'),
-(261, 26, 261, '2021-12-19 05:47:07');
+(251, 48, 251, '2021-12-19 05:45:14');
 
 -- --------------------------------------------------------
 
@@ -282,14 +279,14 @@ CREATE TABLE `test` (
   `description` text NOT NULL,
   `author_id` int(10) UNSIGNED DEFAULT NULL,
   `test_category_id` int(10) UNSIGNED NOT NULL,
-  `creating_date` datetime NOT NULL DEFAULT current_timestamp(),
+  `creating_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `logo_url` text NOT NULL,
-  `show_answers` tinyint(1) NOT NULL DEFAULT 0,
-  `testing_for_exam_points` tinyint(1) DEFAULT 0,
-  `time_constraint_is_active` tinyint(1) NOT NULL DEFAULT 0,
-  `time_constraint_in_seconds` int(11) NOT NULL DEFAULT 0,
-  `tickets_shuffle` tinyint(1) NOT NULL DEFAULT 1,
-  `for_authorised_users_only` tinyint(1) NOT NULL DEFAULT 0
+  `show_answers` tinyint(1) NOT NULL DEFAULT '0',
+  `testing_for_exam_points` tinyint(1) DEFAULT '0',
+  `time_constraint_is_active` tinyint(1) NOT NULL DEFAULT '0',
+  `time_constraint_in_seconds` int(11) NOT NULL DEFAULT '0',
+  `tickets_shuffle` tinyint(1) NOT NULL DEFAULT '1',
+  `for_authorised_users_only` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -352,8 +349,8 @@ CREATE TABLE `ticket` (
   `test_id` int(10) UNSIGNED NOT NULL,
   `picture_url` text NOT NULL,
   `question` text NOT NULL,
-  `reward_score_points` double DEFAULT 0,
-  `exam_points` double DEFAULT 0,
+  `reward_score_points` double DEFAULT '0',
+  `exam_points` double DEFAULT '0',
   `ticket_type_id` int(11) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -399,7 +396,7 @@ CREATE TABLE `ticket_result` (
   `id` int(11) UNSIGNED NOT NULL,
   `user_test_result_id` int(10) UNSIGNED NOT NULL,
   `ticket_id` int(10) UNSIGNED NOT NULL,
-  `creating_time` datetime NOT NULL DEFAULT current_timestamp()
+  `creating_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -486,17 +483,7 @@ INSERT INTO `ticket_result` (`id`, `user_test_result_id`, `ticket_id`, `creating
 (248, 48, 15, '2021-12-19 05:45:05'),
 (249, 48, 14, '2021-12-19 05:45:07'),
 (250, 48, 16, '2021-12-19 05:45:10'),
-(251, 48, 12, '2021-12-19 05:45:14'),
-(252, 49, 2, '2021-12-19 05:45:32'),
-(253, 49, 1, '2021-12-19 05:45:46'),
-(254, 49, 3, '2021-12-19 05:45:59'),
-(255, 49, 8, '2021-12-19 05:46:06'),
-(256, 49, 5, '2021-12-19 05:46:14'),
-(257, 49, 4, '2021-12-19 05:46:23'),
-(258, 49, 9, '2021-12-19 05:46:28'),
-(259, 49, 10, '2021-12-19 05:46:35'),
-(260, 49, 6, '2021-12-19 05:47:04'),
-(261, 49, 7, '2021-12-19 05:47:07');
+(251, 48, 12, '2021-12-19 05:45:14');
 
 -- --------------------------------------------------------
 
@@ -533,21 +520,22 @@ CREATE TABLE `user` (
   `birthyear` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `sex` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `mailing` tinyint(1) UNSIGNED DEFAULT NULL,
-  `creating_date` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+  `creating_date` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `avatar_url` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'images/avatar/default.jpg'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Дамп данных таблицы `user`
 --
 
-INSERT INTO `user` (`id`, `login`, `password`, `username`, `birthday`, `birthmonth`, `birthyear`, `sex`, `mailing`, `creating_date`) VALUES
-(1, 'asd@asd', '$2y$10$w7g5GGHbGe52XmQ41xBAjOcYlAsprJuyf0ySM5ptrJJg2Nfm2BVKy', 'asd@asd', '', '', '', '', 1, NULL),
-(2, 'skdf@fsdjf', '$2y$10$FFtcEXkstd2xWY.UcJ4v0e8.EpkpX2YsJYeEjoH/4JxGCOzx3u.0O', 'fsdjf', '', '', '', '', 1, 'Sunday 21st 2021f November 2021 12:0:27 AM'),
-(5, 'test@gmail.com', '$2y$10$osSg.0bSsB9StWYS0m5wkeIe4.HHHOcuf4sHqS27NSJTzUpzT9rPi', 'test', '4', '6', '2003', '1', 1, '05-12-2021 00:26:02'),
-(6, 'knkirill46@gmail.com', '$2y$10$MeVLyu.fu4Me7CDXEpLFIucIywsUDgsujtHH43YFvDujc/B4kUIV.', 'kerrrusha', '4', '6', '2003', '1', 1, '06-12-2021 01:53:37'),
-(7, 'tfghjkh76@gmm', '$2y$10$nVEH7fykRnntJMT4sY9Dgu35cL9e44OPtbRay.3mcPRXWakEpxmLC', 'lalisa', '17', '4', '2011', '1', 1, '12-12-2021 23:17:08'),
-(8, 'example@gmail.com', '$2y$10$kHDf0zeao0HB0bRTML0DK.o9bY3IMQwZRry56LxX.G3c5ryWyqvuO', 'example', '4', '6', '2003', '1', 1, '14-12-2021 18:47:26'),
-(9, 'fall1n1@gmail.com', '$2y$10$fU9DvTya0h7zVVvNy8YNdeowByEdsS0YOdhcxFE3yKPfW/IBWeO.e', 'fall1n1', '4', '6', '2003', '1', 1, '19-12-2021 04:43:18');
+INSERT INTO `user` (`id`, `login`, `password`, `username`, `birthday`, `birthmonth`, `birthyear`, `sex`, `mailing`, `creating_date`, `avatar_url`) VALUES
+(1, 'asd@asd', '$2y$10$w7g5GGHbGe52XmQ41xBAjOcYlAsprJuyf0ySM5ptrJJg2Nfm2BVKy', 'asd@asd', '', '', '', '', 1, NULL, 'images/avatar/default.jpg'),
+(2, 'skdf@fsdjf', '$2y$10$FFtcEXkstd2xWY.UcJ4v0e8.EpkpX2YsJYeEjoH/4JxGCOzx3u.0O', 'fsdjf', '', '', '', '', 1, 'Sunday 21st 2021f November 2021 12:0:27 AM', 'images/avatar/default.jpg'),
+(5, 'test@gmail.com', '$2y$10$osSg.0bSsB9StWYS0m5wkeIe4.HHHOcuf4sHqS27NSJTzUpzT9rPi', 'test', '4', '6', '2003', '1', 1, '05-12-2021 00:26:02', 'images/avatar/default.jpg'),
+(6, 'knkirill46@gmail.com', '$2y$10$MeVLyu.fu4Me7CDXEpLFIucIywsUDgsujtHH43YFvDujc/B4kUIV.', 'kerrrusha', '4', '6', '2003', '1', 1, '06-12-2021 01:53:37', '../images/avatar/6/photo_2021-09-01_17-17-22.jpg'),
+(7, 'tfghjkh76@gmm', '$2y$10$nVEH7fykRnntJMT4sY9Dgu35cL9e44OPtbRay.3mcPRXWakEpxmLC', 'lalisa', '17', '4', '2011', '1', 1, '12-12-2021 23:17:08', 'images/avatar/default.jpg'),
+(8, 'example@gmail.com', '$2y$10$kHDf0zeao0HB0bRTML0DK.o9bY3IMQwZRry56LxX.G3c5ryWyqvuO', 'example', '4', '6', '2003', '1', 1, '14-12-2021 18:47:26', 'images/avatar/default.jpg'),
+(9, 'fall1n1@gmail.com', '$2y$10$fU9DvTya0h7zVVvNy8YNdeowByEdsS0YOdhcxFE3yKPfW/IBWeO.e', 'fall1n1', '4', '6', '2003', '1', 1, '19-12-2021 04:43:18', 'images/avatar/default.jpg');
 
 -- --------------------------------------------------------
 
@@ -559,11 +547,11 @@ CREATE TABLE `user_test_result` (
   `id` int(11) UNSIGNED NOT NULL,
   `uid` int(10) UNSIGNED NOT NULL,
   `test_id` int(10) UNSIGNED NOT NULL,
-  `score_points` double NOT NULL DEFAULT 0,
-  `exam_points` double NOT NULL DEFAULT 0,
+  `score_points` double NOT NULL DEFAULT '0',
+  `exam_points` double NOT NULL DEFAULT '0',
   `test_status_id` int(10) UNSIGNED NOT NULL,
-  `in_favourite_list` tinyint(1) NOT NULL DEFAULT 0,
-  `creating_time` datetime NOT NULL DEFAULT current_timestamp(),
+  `in_favourite_list` tinyint(1) NOT NULL DEFAULT '0',
+  `creating_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `last_start_time` datetime DEFAULT NULL,
   `last_finish_time` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -583,7 +571,7 @@ INSERT INTO `user_test_result` (`id`, `uid`, `test_id`, `score_points`, `exam_po
 (46, 8, 3, 12, 12, 2, 0, '2021-12-19 05:39:09', '2021-12-19 04:39:09', '2021-12-19 04:39:18'),
 (47, 9, 3, 10, 11, 2, 0, '2021-12-19 05:43:30', '2021-12-19 04:43:30', '2021-12-19 04:43:42'),
 (48, 6, 2, 8, 15, 2, 0, '2021-12-19 05:44:29', '2021-12-19 04:44:29', '2021-12-19 04:45:14'),
-(49, 6, 1, 18, 9.25, 2, 0, '2021-12-19 05:45:25', '2021-12-19 04:45:25', '2021-12-19 04:47:08');
+(54, 6, 1, 0, 0, 2, 0, '2021-12-22 21:34:29', '2021-12-22 20:34:29', '2021-12-22 20:34:38');
 
 --
 -- Индексы сохранённых таблиц
@@ -684,7 +672,7 @@ ALTER TABLE `answer`
 -- AUTO_INCREMENT для таблицы `answer_result`
 --
 ALTER TABLE `answer_result`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=262;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=277;
 
 --
 -- AUTO_INCREMENT для таблицы `key`
@@ -720,7 +708,7 @@ ALTER TABLE `ticket`
 -- AUTO_INCREMENT для таблицы `ticket_result`
 --
 ALTER TABLE `ticket_result`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=262;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=277;
 
 --
 -- AUTO_INCREMENT для таблицы `ticket_type`
@@ -732,13 +720,13 @@ ALTER TABLE `ticket_type`
 -- AUTO_INCREMENT для таблицы `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT для таблицы `user_test_result`
 --
 ALTER TABLE `user_test_result`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц
@@ -792,3 +780,7 @@ ALTER TABLE `user_test_result`
   ADD CONSTRAINT `user_test_result_ibfk_2` FOREIGN KEY (`test_status_id`) REFERENCES `test_status` (`id`),
   ADD CONSTRAINT `user_test_result_ibfk_3` FOREIGN KEY (`uid`) REFERENCES `user` (`id`);
 COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
