@@ -4,7 +4,16 @@
 
     $uid = isset($_COOKIE['logged_user_id']) ? $_COOKIE['logged_user_id'] : null;
 
-    $target_dir = "../images/avatar/". $uid ."/";
+    if(isset($_POST['test_logo']))
+    {
+    	$target_dir = "../images/tests/user_tests_logo/". $uid ."/";
+    }
+    else if(isset($_POST['profile_avatar'])) 
+    	$target_dir = "../images/avatar/". $uid ."/";
+    else
+    	exit();
+
+
 	//если нет папки с id пользователя, создаем
     if (!file_exists($target_dir)) 	
     {
@@ -44,12 +53,12 @@
 	  $uploadOk = 0;
 	}
 
-	// допустимый формат (для аватаров только jpg)
-	if($imageFileType != "jpg") 
-	{
-	  echo "Sorry, only JPG files are allowed.";
-	  $uploadOk = 0;
-	}
+	// Allow certain file formats
+    if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" ) 
+    {
+        echo "Sorry, only JPG, JPEG, PNG files are allowed.";
+        $uploadOk = 0;
+    }
 
 	// Check if $uploadOk is set to 0 by an error
 	if ($uploadOk == 0) 

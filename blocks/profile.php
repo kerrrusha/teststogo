@@ -53,11 +53,12 @@
 								        <h5 class="modal-title">Фото профіля</h5>
 								        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 								      </div>
-								      <form action="blocks/upload_avatar.php" method="post" enctype="multipart/form-data">
+								      <form action="blocks/img_upload.php" method="post" enctype="multipart/form-data">
 								      <div class="modal-body">
 								        <!-- загружаем изображение на сайт -->
-								        <label class="form-label" for="customFile">Завантажте зображення <strong>jpg</strong> формату</label>
+								        <label class="form-label" for="customFile">Завантажте зображення <strong>jpg/png/jpeg</strong> формату</label>
 								        <input type="file" class="form-control" name="fileToUpload" id="fileToUpload" />
+								        <input name="profile_avatar" value="1" hidden>
 								      </div>
 								      <div class="modal-footer">
 								        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>

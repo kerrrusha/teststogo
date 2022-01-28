@@ -6,14 +6,14 @@
 					    <div class="text-muted mb-4">
 					    	<span>
 					    		<?php 
-					    			$test_categories = R::getAll("select name from test_category");
+					    			$test_categories = R::getAll("select * from test_category");
 
 					    			for($i = 0; $i < sizeof($test_categories); $i++)
 					    			{
 					    				$sep = ", ";
 					    				if($i == sizeof($test_categories) - 1)
 					    					$sep = "";
-					    				echo mb_convert_case($test_categories[$i]['name'], MB_CASE_TITLE, "UTF-8") . $sep;
+					    				echo mb_convert_case($test_categories[$i]['plural'], MB_CASE_TITLE, "UTF-8") . $sep;
 					    			}
 					    		 ?>
 					    	</span>

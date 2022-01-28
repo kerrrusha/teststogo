@@ -109,7 +109,7 @@
           
           //если у теста поле id установлено в null, то считаем что мы - его создатели (teststogo.crew)
           $this->author = empty($this->author_id) ? 'teststogo.crew' : R::getRow("select * from user where id = $this->author_id")['username'];
-          $this->category = R::getRow("select name from test_category where id = $this->category_id")['name'];
+          $this->category = R::getRow("select * from test_category where id = $this->category_id")['plural'];
           
           $tickets_sql = R::getAll("select * from ticket where test_id = $this->id");
           //если вопросы к данному тесту существуют

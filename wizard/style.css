@@ -1,0 +1,38 @@
+.wizard-step
+{
+	min-height: 100vh;
+}
+
+main 
+{
+	display: flex;
+	flex-wrap: nowrap;
+	height: 100vh;
+	max-height: 100vh;
+	flex-direction: row;
+}
+
+/* For Mobile */
+@media screen and (max-width: 540px) 
+{
+	#full-nav {display: none!important;}
+}
+
+/* Full Version */
+@media screen and (min-width: 540px) 
+{
+    #mobile-nav {display: none!important;}
+}     
+
+.navigation
+{
+	overflow-x: auto;
+	overflow-y: hidden;
+	position: fixed;
+	height: 100vh;
+}
+
+.btn-outline-light:hover
+{
+	background-color: #a1a1a1!important;
+}

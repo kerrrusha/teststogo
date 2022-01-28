@@ -1,7 +1,7 @@
 <?php
     require_once "../libs/rb.php";           //подключение библиотеки RedBean PHP
-    require "../blocks/db.php"; 
-    require "class_description.php";
+    require_once "../blocks/db.php"; 
+    require_once "class_description.php";
 
     //авторизован ли пользователь
     $authorised = isset($_COOKIE['logged_user_id']);
