@@ -198,7 +198,7 @@ function new_question()
   var ticket_type_options = [];
   var options = document.getElementById('ticket_types').children;
   for (var i = 0; i < options.length; i++) 
-    ticket_type_options.push('<option value="'+i.toString()+'">'+options[i].innerHTML+'</option>');
+    ticket_type_options.push('<option value="'+(i+1).toString()+'">'+options[i].innerHTML+'</option>');
 
   elem = '<div class="card py-2 px-5 mb-2 border-dark">';
   elem += '<div style="position: absolute; right: 10px;">';
@@ -211,7 +211,7 @@ function new_question()
   elem += '</div>';
   elem += '<div class="col-3">';
   elem += '<label for="ticket_type'+(question_amount+1).toString()+'">Тип</label>';
-  elem += '<select class="form-select" id="ticket_type'+(question_amount+1).toString()+'" name="ticket_type'+(question_amount+1).toString()+'" value="">';
+  elem += '<select class="form-select" id="ticket_type'+(question_amount+1).toString()+'" name="ticket_type'+(question_amount+1).toString()+'" onchange="type_change('+(question_amount+1).toString()+')">';
   elem += ticket_type_options;
   elem += '</select>';
   elem += '</div>';
@@ -319,4 +319,30 @@ function remove_answer(question_number, answer_number)
     {
       answerbox.children[i].children[0].children[1].style.display = 'none';
     }
+}
+function type_change(question_number)
+{
+  var type_id = document.getElementById('ticket_type'+question_number.toString()).value;
+  var answerbox = document.getElementById('answerbox_ticket'+question_number.toString());
+
+  var type = null;
+  if(type_id == 1)
+    type = "radio";
+  else
+    type = "checkbox";
+
+  for(var i = 0; i < answerbox.children.length; i++)
+  {
+    answerbox.children[i].children[0].children[0].children[0].type = type;
+  }
+}
+function go_back(current_tab)
+{
+  tabs = [$("#start-tab"), $("#info-tab"), $("#setup-tab"), $("#create-tab"), $("#finish-tab")];
+  tabs[current_tab - 2].tab('show');
+}
+function go_forward(current_tab)
+{
+  tabs = [$("#start-tab"), $("#info-tab"), $("#setup-tab"), $("#create-tab"), $("#finish-tab")];
+  tabs[current_tab].tab('show');
 }

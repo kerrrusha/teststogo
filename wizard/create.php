@@ -96,17 +96,20 @@
       </li>
     </ul>
     <hr>
-    <div class="dropdown mx-3">
-      <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
-        <strong>@test</strong>
-      </a>
-      <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2">
-        <li><a class="dropdown-item" href="">Мої проекти</a></li>
-        <li><a class="dropdown-item" href="/index.php#tab-2">Рейтинг</a></li>
-        <li><a class="dropdown-item" href="/index.php#tab-3">Профіль</a></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="/id/signout.php">Вихід</a></li>
-      </ul>
+    <div class="d-flex flex-row">
+      <img src="<?php echo R::getRow('select avatar_url from user where id = ?', [$_COOKIE['logged_user_id']])['avatar_url']; ?>" class="rounded-circle" width=30 height=30>
+      <div class="dropdown mx-3 d-flex align-middle">
+        <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
+          <strong>@<?php echo R::getRow('select username from user where id = ?', [$_COOKIE['logged_user_id']])['username']; ?></strong>
+        </a>
+        <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2">
+          <li><a class="dropdown-item" href="">Мої проекти</a></li>
+          <li><a class="dropdown-item" href="/index.php#tab-2">Рейтинг</a></li>
+          <li><a class="dropdown-item" href="/index.php#tab-3">Профіль</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="/id/signout.php">Вихід</a></li>
+        </ul>
+      </div>
     </div>
   </div>
 
@@ -145,7 +148,7 @@
     </ul>
     <div class="dropdown border-top">
       <a href="" class="d-flex align-items-center justify-content-center p-3 link-dark text-decoration-none dropdown-toggle" id="dropdownUser3" data-bs-toggle="dropdown" aria-expanded="false">
-        <svg class="bi" width="24" height="24" role="img" aria-label="Customers"><use xlink:href="#people-circle"></use></svg>
+        <img src="<?php echo R::getRow('select avatar_url from user where id = ?', [$_COOKIE['logged_user_id']])['avatar_url']; ?>" class="rounded-circle" width=24 height=24>
       </a>
       <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2">
         <li><a class="dropdown-item" href="">Мої проекти</a></li>
@@ -169,7 +172,7 @@
                 <tbody>
                   <tr>
                     <td>
-                      <button type="button" class="btn btn-outline-dark h-100 p-3 text-start">
+                      <button type="button" onclick="$('#info-tab').tab('show')" class="btn btn-outline-dark h-100 p-3 text-start">
                         Технічний
                       </button>
                     </td>
@@ -244,6 +247,21 @@
                   <!-- <button type="button" onclick="upload_logo()" class="btn btn-outline-dark">Встановити</button> -->
               </div>                
             </div>
+            <hr class="mt-4">
+            <div class="d-flex flex-row justify-content-between">
+              <button type="button" onclick="go_back(2)" class="btn btn-outline-secondary btn-lg" style="width:150px;">
+                <div class="d-flex flex-row align-items-center justify-content-center">
+                  <svg class="bi" width="36" height="20"><use xlink:href="#arrow-left"></use></svg>
+                  Назад
+                </div>
+              </button>
+              <button type="button" onclick="go_forward(2)" class="btn btn-outline-primary btn-lg" style="width:150px;">
+                <div class="d-flex flex-row align-items-center justify-content-center">
+                  Далі
+                  <svg class="bi" width="36" height="20"><use xlink:href="#arrow-right"></use></svg>
+                </div>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -301,11 +319,26 @@
                 </tr>
               </tbody>
             </table>
-            <div class="alert alert-primary d-flex align-items-center mt-5" role="alert">
+            <div class="alert alert-primary d-flex align-items-center mt-3" role="alert">
               <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill"/></svg>
               <div>
                 В режимі тестування на оцінку та за обраної опції "Закрити доступ неавторизованим користувачам" автору тесту стають доступні персоналізовані результати та оцінки <small>(це може бути корисним для викладачів)</small>
               </div>
+            </div>
+            <hr class="mt-4">
+            <div class="d-flex flex-row justify-content-between">
+              <button type="button" onclick="go_back(3)" class="btn btn-outline-secondary btn-lg" style="width:150px;">
+                <div class="d-flex flex-row align-items-center justify-content-center">
+                  <svg class="bi" width="36" height="20"><use xlink:href="#arrow-left"></use></svg>
+                  Назад
+                </div>
+              </button>
+              <button type="button" onclick="go_forward(3)" class="btn btn-outline-primary btn-lg" style="width:150px;">
+                <div class="d-flex flex-row align-items-center justify-content-center">
+                  Далі
+                  <svg class="bi" width="36" height="20"><use xlink:href="#arrow-right"></use></svg>
+                </div>
+              </button>
             </div>
           </div>
         </div>
@@ -339,7 +372,7 @@
                   </div>
                   <div class="col-3">
                     <label for="ticket_type1">Тип</label>
-                    <select class="form-select" id="ticket_type1" name="ticket_type1" value="">
+                    <select class="form-select" id="ticket_type1" name="ticket_type1" onchange="type_change(1)">
                         <?php 
                           for($i = 0; $i < sizeof($ticket_types); $i++)
                           {
@@ -388,13 +421,42 @@
                   Нове питання
                 </div>
               </button>
+            <hr class="mt-4">
+            <div class="d-flex flex-row justify-content-between">
+              <button type="button" onclick="go_back(4)" class="btn btn-outline-secondary btn-lg" style="width:150px;">
+                <div class="d-flex flex-row align-items-center justify-content-center">
+                  <svg class="bi" width="36" height="20"><use xlink:href="#arrow-left"></use></svg>
+                  Назад
+                </div>
+              </button>
+              <button type="button" onclick="go_forward(4)" class="btn btn-outline-primary btn-lg" style="width:150px;">
+                <div class="d-flex flex-row align-items-center justify-content-center">
+                  Далі
+                  <svg class="bi" width="36" height="20"><use xlink:href="#arrow-right"></use></svg>
+                </div>
+              </button>
+            </div>
           </div>
         </div>
       </div>
 	  	<div class="tab-pane fade" id="finish" role="tabpanel" aria-labelledby="finish-tab">
         <div class="row container wizard-step py-5">
           <div class="mx-auto my-auto">
-            
+            <hr class="mt-4">
+            <div class="d-flex flex-row justify-content-between">
+              <button type="button" onclick="go_back(5)" class="btn btn-outline-secondary btn-lg" style="width:150px;">
+                <div class="d-flex flex-row align-items-center justify-content-center">
+                  <svg class="bi" width="36" height="20"><use xlink:href="#arrow-left"></use></svg>
+                  Назад
+                </div>
+              </button>
+              <button type="button" onclick="" class="btn btn-outline-primary btn-lg" style="width:250px;">
+                <div class="d-flex flex-row align-items-center justify-content-center">
+                  Опублікувати
+                  <svg class="bi" width="36" height="20"><use xlink:href="#upload"></use></svg>
+                </div>
+              </button>
+            </div>
           </div>
         </div>  
       </div>
