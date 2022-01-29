@@ -249,7 +249,7 @@ function new_question()
   elem += '</button>';
   elem += '</div>';
 
-  ticketbox.innerHTML += elem;
+  ticketbox.insertAdjacentHTML('beforeend', elem);
 
   //проверяем если вопросов больше чем 1 (мин. к-ство), то добавляем кнопки удаления вопросов
   if(ticketbox.children.length > 1)
@@ -278,7 +278,7 @@ function new_answer(question_number)
   elem += '<input type="text" class="form-control validate-me" id="'+ticket_num+'_'+answer_num+'" name="'+ticket_num+'_'+answer_num+'" placeholder="" value="" required>';
   elem += '</div>';
 
-  answerbox.innerHTML += elem;
+  answerbox.insertAdjacentHTML('beforeend', elem);
 
   //проверяем если ответов больше 2 шт. (мин. к-ство), то добавляем кнопки удаления ответов
   if(answerbox.children.length > 2)
