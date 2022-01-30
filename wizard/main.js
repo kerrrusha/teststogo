@@ -1,4 +1,104 @@
-document.getElementById('fileToUpload').onchange = evt => {
+class Config
+{
+  constructor()
+  {
+    this.show_answers = true;
+    this.tickets_shuffle = false;
+    this.for_authorised_users_only = false;
+    this.testing_for_exam_points = false;
+    this.time_constraint_is_active = false;
+    this.time_constraint_in_seconds = 0;
+  }
+}
+
+class Answer
+{
+  constructor()
+  {
+    this.answer = "";
+    this.is_correct = false;
+  }
+}
+
+class Ticket
+{
+  constructor()
+  {
+    this.question = "";
+    this.ticket_type = "";
+    this.answers = [];
+  }
+}
+
+class Technical_Test
+{
+  constructor() 
+  {
+    this.name = "";
+    this.description = "";
+    this.category = "";
+    this.logo = null; 
+    this.config = new Config();
+    this.tickets = [];
+  }
+
+  clear()
+  {
+    this.name = "";
+    this.description = "";
+    this.category = "";
+    this.logo = null; 
+    this.config = new Config();
+    this.tickets = [];
+  }
+
+  collect_data()
+  {
+    this.clear();
+
+    this.name = document.getElementById('name').value;
+    this.description = document.getElementById('description').value;
+    this.category = $("#category option:selected").text();
+    this.logo = document.getElementById("fileToUpload").files;
+
+    this.config.show_answers = document.getElementById('show_answers').checked;
+    this.config.tickets_shuffle = document.getElementById('tickets_shuffle').checked;
+    this.config.for_authorised_users_only = document.getElementById('for_authorised_users_only').checked;
+    this.config.testing_for_exam_points = document.getElementById('testing_for_exam_points').checked;
+    this.config.time_constraint_is_active = document.getElementById('time_constraint_is_active').checked;
+    this.config.time_constraint_in_seconds = this.config.time_constraint_is_active ? 60 * get_minutes(document.getElementById('time_constraint_in_seconds').value) : 0;
+
+    var ticketbox = document.getElementById('ticketbox');
+    //заполнение вопросов
+    for (var i = 0; i < ticketbox.children.length; i++) 
+    {
+      var ticket = new Ticket();
+
+      ticket.question = document.getElementById('question'+(i+1).toString()).value;
+      ticket.ticket_type = $("#ticket_type"+(i+1).toString()+" option:selected").text();
+      
+      //заполнение ответов
+      var answerbox = document.getElementById('answerbox_ticket'+(i+1).toString());
+      for(var j = 0; j < answerbox.children.length; j++)
+      {
+        var answer = new Answer();
+        
+        answer.answer = document.getElementById('ticket'+(i+1).toString()+'_answer'+(j+1).toString()).value;
+        answer.is_correct = document.getElementById('ticket'+(i+1).toString()+'_answer'+(j+1).toString()+'_iscorrect').checked;
+
+        ticket.answers.push(answer);
+      }
+
+      this.tickets.push(ticket);
+    }
+  }
+}
+
+var test = new Technical_Test;
+
+var fileToUpload = document.getElementById('fileToUpload');
+if(fileToUpload)
+  fileToUpload.onchange = evt => {
   var imageInput = document.getElementById("fileToUpload");
   var imagePreview = document.getElementById("img_preview");
 
@@ -346,3 +446,151 @@ function go_forward(current_tab)
   tabs = [$("#start-tab"), $("#info-tab"), $("#setup-tab"), $("#create-tab"), $("#finish-tab")];
   tabs[current_tab].tab('show');
 }
+
+function errorbox_clear()
+{
+  var errorbox = document.getElementById('error-box'),
+      errorbox_childrens = errorbox.children.length;
+      for (var i = 0; i < errorbox_childrens; i++) 
+        errorbox.children[0].remove();
+}
+function previewbox_clear()
+{
+  var previewbox = document.getElementById('preview-box'),
+      previewbox_childrens = previewbox.children.length;
+  for(var i = 0; i < previewbox_childrens; i++)
+    previewbox.children[0].remove();
+}
+
+// обработка события show.bs.tab (для загрузки предпросмотра теста, ошибок и тд)
+$('[data-bs-toggle="tab"]').on('show.bs.tab', function (e) {
+  //если открываем вкладку с предпросмотром
+  if($(e.target).attr('id') == 'finish-tab')
+  {
+    var errors = [];
+
+    if(document.getElementById('name').value.length < 3)
+    {
+      var js = "$('#info-tab').tab('show')";
+      errors.push('<li><a style="cursor:pointer;text-decoration: underline;" onclick="'+js+'">Не вказано <strong>назву</strong></a> <small>(мін. 3 символи)</small></li>');
+    }
+
+    //проверка заполнения вопросов
+    var ticketbox = document.getElementById('ticketbox');
+    for (var i = 0; i < ticketbox.children.length; i++) 
+    {
+      if(document.getElementById('question'+(i+1).toString()).value.length < 3)
+      {
+        var js = "$('#create-tab').tab('show')";
+        errors.push('<li><a style="cursor:pointer;text-decoration: underline;" onclick="'+js+'">Не введено питання <strong>#'+(i+1).toString()+'</strong></a> <small>(мін. 3 символи)</small></li>');
+      }
+    }
+
+    //проверка заполнения ответов
+    var ticketbox = document.getElementById('ticketbox');
+    for (var i = 0; i < ticketbox.children.length; i++) 
+    {
+      var answerbox = document.getElementById('answerbox_ticket' + (i+1).toString());
+      for(var j = 0; j < answerbox.children.length; j++)
+      {
+        if(document.getElementById('ticket'+(i+1).toString()+'_answer'+(j+1).toString()).value.length < 1)
+        {
+          var js = "$('#create-tab').tab('show')";
+          errors.push('<li><a style="cursor:pointer;text-decoration: underline;" onclick="'+js+'">Порожня відповідь <strong>#'+(j+1).toString()+'</strong> до питання <strong>#'+(i+1).toString()+'</strong></a></li>');
+        }
+      }
+    }
+
+    //если есть ошибки
+    if(errors.length > 0)
+    {
+      //очищаем блок ошибок
+      errorbox_clear();
+      //очищаем блок предпросмотра
+      previewbox_clear()
+
+      //блокаем кнопку публикации
+      document.getElementById('publicate').disabled = true;
+
+      var elem = "";
+
+      elem += '<div class="alert alert-danger d-flex flex-column align-items-start" role="alert">';
+      elem += '<svg class="bi flex-shrink-0 me-2" style="position: absolute; left:20px;" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>';
+      elem += '<div class="mb-3 mx-auto">';
+      elem += '<strong>Здається, щось не так:</strong>';
+      elem += '</div>';
+      elem += '<ul class="m-0">';
+      
+      for(var i=0; i<errors.length; i++)
+        elem += errors[i];
+
+      elem += '</ul>';
+      elem += '</div>';
+        
+      document.getElementById('error-box').insertAdjacentHTML('beforeend', elem);
+    }
+    else
+    {
+      //очищаем блок ошибок
+      errorbox_clear();
+      //очищаем блок предпросмотра
+      previewbox_clear()
+
+      //создаем обновленный предпросмотр
+      var elem = '';
+      elem += '<h1 class="display-5 fw-bold">Попередній перегляд</h1>';
+      elem += '<iframe class="w-100" src="test_preview.html" id="preview-frame" style="height:60vh;"></iframe>';
+      document.getElementById('preview-box').insertAdjacentHTML('beforeend', elem);
+
+      //заполняем его
+      var iframe = document.getElementById('preview-frame');
+      iframe.onload = function () {
+        //получаем доступ к документу
+        var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+
+        //собираем введённые данные по всей странице
+        test.collect_data();
+        console.log(test);
+
+        iframeDocument.getElementById('test_preview_name').innerHTML = test.name;
+        //выводим вопросы
+        var test_preview_box = iframeDocument.getElementById('test_preview_box');
+        var elem = '';
+        for (var i = 0; i < test.tickets.length; i++) {
+          elem += '<div id="test_preview_ticket'+(i+1).toString()+'">';
+          elem += '<p class="roboto font-weight-500 mt-3 mb-2 text-center">'+(i+1).toString()+'. '+test.tickets[i].question+'</p>';
+          
+          //добавляем ответы
+          for (var j = 0; j < test.tickets[i].answers.length; j++) {
+            elem += '<div class="box my-0">';
+            elem += '<input ';
+            elem += 'type="radio" ';
+            elem += 'name="ticket'+(i+1).toString()+'" ';
+            elem += 'id="ticket'+(i+1).toString()+'_answer'+(j+1).toString()+'" ';
+            elem += 'disabled ';
+            elem += '>';
+            elem += '<label class="row flex-nowrap justify-content-between" for="ticket'+(i+1).toString()+'_answer'+(j+1).toString()+'">';
+            elem += test.tickets[i].answers[j].answer;
+            if(test.tickets[i].answers[j].is_correct)
+            {
+              elem += '<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">';
+              elem += '<symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">';
+              elem += '<path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>';
+              elem += '</symbol>';
+              elem += '</svg>';
+              elem += '<svg style="color:green;width:initial;" class="bi" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>';
+            }
+            elem += '</label>';
+            elem += '</div>';
+          }
+          
+          elem += '</div>';
+        }
+        test_preview_box.insertAdjacentHTML('beforeend', elem);
+      }
+
+      //разблокировуем кнопку публикации
+      document.getElementById('publicate').disabled = false;
+    }
+  }
+});

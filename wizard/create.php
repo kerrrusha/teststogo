@@ -34,6 +34,7 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;0,700;1,900&display=swap" rel="stylesheet">
 
 	<!-- Bootstrap CSS (jsDelivr CDN) -->
   	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
@@ -441,7 +442,24 @@
       </div>
 	  	<div class="tab-pane fade" id="finish" role="tabpanel" aria-labelledby="finish-tab">
         <div class="row container wizard-step py-5">
-          <div class="mx-auto my-auto">
+          <div class="mx-auto my-auto mt-0">
+            <div id="error-box">
+              <div class="alert alert-danger d-flex flex-column align-items-start" role="alert">
+                <svg class="bi flex-shrink-0 me-2" style="position: absolute; left:20px;" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                <div class="mb-3 mx-auto">  
+                  <strong>Здається, щось не так:</strong>
+                </div>
+                <ul class="m-0">
+                  <li><a style="cursor:pointer;text-decoration: underline;" onclick="$('#info-tab').tab('show')">Не вказано <strong>назву</strong></a> <small>(мін. 3 символи)</small></li>
+                  <li><a style="cursor:pointer;text-decoration: underline;" onclick="$('#create-tab').tab('show')">Не введено питання <strong>#1</strong></a> <small>(мін. 3 символи)</small></li>
+                  <li><a style="cursor:pointer;text-decoration: underline;" onclick="$('#create-tab').tab('show')">Порожня відповідь <strong>#1</strong> до питання <strong>#1</strong></a></li>
+                </ul>
+              </div>
+            </div>
+            <div id="preview-box">
+              <h1 class="display-5 fw-bold">Попередній перегляд</h1>
+              <iframe class="w-100" src="test_preview.html" id="preview-frame" style="height:60vh;"></iframe>
+            </div>
             <hr class="mt-4">
             <div class="d-flex flex-row justify-content-between">
               <button type="button" onclick="go_back(5)" class="btn btn-outline-secondary btn-lg" style="width:150px;">
@@ -450,7 +468,7 @@
                   Назад
                 </div>
               </button>
-              <button type="button" onclick="" class="btn btn-outline-primary btn-lg" style="width:250px;">
+              <button id="publicate" type="button" onclick="" class="btn btn-outline-primary btn-lg" style="width:250px;" disabled>
                 <div class="d-flex flex-row align-items-center justify-content-center">
                   Опублікувати
                   <svg class="bi" width="36" height="20"><use xlink:href="#upload"></use></svg>
