@@ -1,14 +1,5 @@
-<?php 
-	//local connect
-	R::setup( 'mysql:host=localhost;port=3307;dbname=teststogo-db','root','root' ); //for both mysql or mariaDB
+<?php
+R::setup('mysql:host=mysql;port=3306;dbname=teststogo-db', 'root', 'root');
 
-	//sprinthost connect
-	// try{
- //        $db = new PDO('mysql:host=localhost;dbname=f0610890_teststogo-db','f0610890_teststogo-db','root');
- //    } catch(PDOException $e){
- //        echo $e->getmessage();
- //    }
-	
-	// R::setup( 'mysql:host=localhost;dbname=f0610890_teststogo-db','f0610890_teststogo-db','root' ); //for both mysql or mariaDB
-	// if(!R::testConnection()) echo 'Не удалось подключиться к бд...';
+if (!R::testConnection()) echo "Can't connect to DB...";
 ?>
