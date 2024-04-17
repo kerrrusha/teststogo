@@ -1,6 +1,6 @@
 <?php 
 	//local connect
-	R::setup( 'mysql:host=localhost;dbname=teststogo-db','root','' ); //for both mysql or mariaDB
+	R::setup( 'mysql:host=localhost;port=3307;dbname=teststogo-db','root','root' ); //for both mysql or mariaDB
 
 	//sprinthost connect
 	// try{
