@@ -41,8 +41,8 @@
 	    else
 	    {
 			//Такого аккаунту не існує
-			header('Location: /index.php?lgn='.$login.'&e=0&p=1#tab-3');
-	    }
+            echo "Something went wrong. <a href='/index.php?lgn={$login}&e=0&p=1#tab-3'>Return to main page</a>";
+        }
 	}
 
     //header('Location: /index.php#tab-3');

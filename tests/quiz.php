@@ -50,7 +50,6 @@
                 
         //перенаправление на страницу результатов
         echo '<script>window.location.replace("results.php?id='. $test->id . ');</script>';
-        header('Location: results.php?id='. $test->id);
     }
 
     //var_dump($_POST);
@@ -350,7 +349,7 @@
 
                         if(!$closed)
                           //случай когда еще не проходили (с данного аккаунта)
-                          if(!$stat->status)
+                          if(!isset($stat) || !$stat->status)
                             {
                               echo '<article class="mb-5">
                                       <form action="" method="post">
